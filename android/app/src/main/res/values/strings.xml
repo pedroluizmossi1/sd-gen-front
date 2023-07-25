@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">\'sd-gen\'</string>
-    <string name="title_activity_main">\'sd-gen\'</string>
+    <string name="app_name">Sd Gen</string>
+    <string name="title_activity_main">Sd Gen</string>
     <string name="package_name">sd.gen</string>
     <string name="custom_url_scheme">sd.gen</string>
 </resources>
