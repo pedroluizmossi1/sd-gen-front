@@ -1,0 +1,12 @@
+<app-toggle [title]="'Images'"></app-toggle>
+
+<ion-content>
+  <ion-list *ngFor="let item of images">
+    <ion-item>
+      <img [src]="item" *ngIf="item" class="ion-card-header-image">
+    </ion-item>
+  </ion-list>
+  <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

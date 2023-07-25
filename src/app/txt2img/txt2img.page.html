@@ -1,0 +1,54 @@
+<app-toggle [title]="'Txt2Img'"></app-toggle>
+
+<ion-content [fullscreen]="true">
+
+  
+  <ion-card>
+    <ion-grid>
+      <ion-row>
+        <ion-col *ngFor="let imageUrl of images">
+          <img appFullscreenImage [src]="imageUrl" *ngIf="imageUrl" class="ion-card-header-image">
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+      <ion-card-header class="ion-card-header-center">
+        <ion-progress-bar type="indeterminate" *ngIf="imageLoader"></ion-progress-bar>
+        <ion-icon name="image-outline" class="imageIconSizePlaceholder" *ngIf="imagePlaceholder"></ion-icon>
+      </ion-card-header>
+  
+    <ion-card-content>
+      <form [formGroup]="generateImageForm">
+      <ion-textarea label="Prompt" labelPlacement="floating" fill="outline" placeholder="Enter text" formControlName="prompt"></ion-textarea>
+      <ion-grid>
+        <ion-row>
+          <ion-col><ion-input label="Width" label-placement="floating" fill="outline" value="512" type="number" formControlName="width"></ion-input></ion-col>
+          <ion-col><ion-input label="Height" label-placement="floating" fill="outline" value="768" type="number" formControlName="height"></ion-input></ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-grid>
+        <ion-row>
+          <ion-col><ion-input label="Steps" label-placement="floating" fill="outline" value="20" type="number" formControlName="steps"></ion-input></ion-col>
+          <ion-col><app-sampler-select (sampler)="changeSamplerCallback($event)"></app-sampler-select></ion-col>
+          <ion-col><app-get-folder-select (folder)="changeFolderCallback($event)"></app-get-folder-select></ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-grid>
+        <ion-row>
+          <ion-col><ion-input label="Seed" label-placement="floating" fill="outline" value="-1" type="number" formControlName="seed"></ion-input></ion-col>
+          <ion-col><ion-input label="batchSize" label-placement="floating" fill="outline" value="1" type="number" formControlName="batch_size"></ion-input></ion-col>
+          <ion-col><ion-input label="Cfg Scale" label-placement="floating" fill="outline" value="7" type="number" formControlName="cfg_scale"></ion-input></ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+    </ion-card-content>
+
+  </ion-card>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button expand="block" color="primary" (click)="generateImage()">Generate Image</ion-button>
+  </ion-toolbar>
+</ion-footer>
+
