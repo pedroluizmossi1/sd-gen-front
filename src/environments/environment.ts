@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  sdGenApiUrl: 'http://192.168.100.44:8000',
+  sdGenApiUrl: 'http://189.11.183.210:8080',
 };
 
 /*

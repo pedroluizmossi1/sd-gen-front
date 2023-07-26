@@ -24,7 +24,7 @@ export class LoginPage implements OnInit {
 
   login() {
     const formData = this.loginForm.value;
-    this.Sd.postAuthLogin(formData).subscribe((data: any) => {
+    var request = this.Sd.postAuthLogin(formData).subscribe((data: any) => {
       if (data.status === 200) {
         localStorage.setItem('token', data.body.token);
         this.router.navigate(['/txt2img']);
