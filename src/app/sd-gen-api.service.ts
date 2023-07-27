@@ -35,6 +35,10 @@ export class SdGenApiService {
     return this.http.get(`${this.apiUrl}/user/profile/`, { headers: headers, observe: 'response' });
   }
 
+  postAuthRegister(data: any): Observable<HttpResponse<any>> {
+    return this.http.post(`${this.apiUrl}/user/register/`, data, { observe: 'response' });
+  }
+
   // Folder
 
   getUserFolders(token: any): Observable<HttpResponse<any>> {

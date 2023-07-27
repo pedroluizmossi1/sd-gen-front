@@ -10,9 +10,10 @@ import { IonicModule } from '@ionic/angular';
 })
 export class ToggleComponent  implements OnInit {
   @Input() title: string = 'toggle';
-
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+  }
 
 }

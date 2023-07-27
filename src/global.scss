@@ -43,3 +43,30 @@
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 
+.no-background {
+  background: transparent !important;
+}
+
+.ion-alert-custom.error {
+  .alert-title {
+    color: var(--ion-color-danger) !important;
+  }
+}
+
+.ion-alert-custom.warning {
+  .alert-title {
+    color: var(--ion-color-warning) !important;
+  }
+}
+
+.ion-alert-custom.info {
+  .alert-title {
+    color: var(--ion-color-primary) !important;
+  }
+}
+
+.ion-alert-custom.success {
+  .alert-title {
+    color: var(--ion-color-success) !important;
+  }
+}

@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: "'sd-gen'",
   webDir: 'www',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'http'
   }
 };
 

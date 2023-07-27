@@ -28,4 +28,8 @@ export const routes: Routes = [
     path: 'user-folder-image',
     loadComponent: () => import('./user-folder/user-folder-image/user-folder-image.page').then( m => m.UserFolderImagePage) , canActivate: [AuthGuard]
   },
+  {
+    path: 'register',
+    loadComponent: () => import('./register/register.page').then( m => m.RegisterPage)
+  },
 ]

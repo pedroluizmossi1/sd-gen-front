@@ -4,26 +4,21 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">login</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content>
-    <ion-list>
-      <ion-list>
+<ion-content class="ion-padding">
         <form [formGroup]="loginForm">
-        <ion-item>
-          <ion-input label="Login" placeholder="Username" formControlName="login"></ion-input>
-        </ion-item>
-    
-        <ion-item>
-          <ion-input label="Password" type="password" formControlName="password"></ion-input>
-        </ion-item>
+          <ion-input label="Login" placeholder="Username" formControlName="login" label-placement="floating" fill="outline" placeholder="Type User"></ion-input>
+          <br/>
+          <ion-input label="Password" type="password" formControlName="password" label-placement="floating" fill="outline" placeholder="Type Password"></ion-input>
+          <div slot="label">Reset <ion-text color="danger">Password</ion-text></div>
         </form>
-      </ion-list>
-    </ion-list>
-    <ion-button (click)="login()" expand="block">Login</ion-button>
-  </ion-content>
+          <br/>
+          <ion-button expand="block" color="primary" fill="outline" (click)="login()">Login</ion-button>  
 </ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-item>
+      <ion-label>No Account?</ion-label>
+      <ion-button  color="secondary" fill="outline" (click)="register()">Sign up</ion-button>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>
