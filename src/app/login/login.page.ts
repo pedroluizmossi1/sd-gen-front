@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router} from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { SdGenApiService } from 'src/app/sd-gen-api.service';
+import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
+import { AlertService } from '../services/alert.service';
+import { ToggleComponent } from '../menu/toggle/toggle.component';
 
 
 @Component({
@@ -11,36 +13,56 @@ import { SdGenApiService } from 'src/app/sd-gen-api.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, ReactiveFormsModule]
+  imports: [IonicModule, CommonModule, ReactiveFormsModule, ToggleComponent]
 })
 export class LoginPage implements OnInit {
 
-  constructor(private Sd: SdGenApiService, private router: Router) { }
+  constructor(private Sd: SdGenApiService, private router: Router, private alert: AlertService) { }
+
+  loader: boolean = false;
 
   loginForm = new FormGroup({
-    login: new FormControl('admin'),
-    password: new FormControl('admin'),
+    login: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]),
+    password: new FormControl('', [Validators.required, Validators.maxLength(50)]),
   })
 
   login() {
+    this.loader = true;    
     const formData = this.loginForm.value;
-    var request = this.Sd.postAuthLogin(formData).subscribe((data: any) => {
-      if (data.status === 200) {
-        localStorage.setItem('token', data.body.token);
-        this.router.navigate(['/txt2img']);
-
-        this.Sd.getUserProfile(data.body.token).subscribe((data: any) => {
+    var request = this.Sd.postAuthLogin(formData).subscribe(
+      (res) => {
+      if (res.status === 200) {
+        localStorage.setItem('token', res.body.token);
+        this.Sd.getUserProfile(res.body.token).subscribe((data: any) => {
           if (data.status === 200) {
             localStorage.setItem('user', JSON.stringify(data.body));
-          }
-        }
-        );
+            window.location.href = '/txt2img';
+          } 
+        });
       }
-    });
+      },
+      (err) => {
+      this.loader = false;
+      if (err.status === 401) {
+        this.alert.presentAlert('Error', 'Invalid credentials', 'The credentials you entered are invalid. Please try again.', ['OK'], 'error');
+      } else {
+        this.alert.presentAlert('Error', 'Unknown error', err.error.detail, ['OK'], 'error');
+      }
+      },
+      () =>
+      { 
+        this.loader = false;
+        request.unsubscribe();
+      }
+    );
   }
 
   register() {
     this.router.navigate(['/register']);
+  }
+
+  resetPassword() {
+    this.router.navigate(['/login/reset-password']);
   }
 
   ngOnInit() {

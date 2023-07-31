@@ -1,18 +1,22 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="false">
   <ion-toolbar>
-    <ion-title>login</ion-title>
+    <ion-title>Login</ion-title>
   </ion-toolbar>
 </ion-header>
+
+<ion-progress-bar type="indeterminate" *ngIf="loader"></ion-progress-bar>
 
 <ion-content class="ion-padding">
         <form [formGroup]="loginForm">
           <ion-input label="Login" placeholder="Username" formControlName="login" label-placement="floating" fill="outline" placeholder="Type User"></ion-input>
           <br/>
           <ion-input label="Password" type="password" formControlName="password" label-placement="floating" fill="outline" placeholder="Type Password"></ion-input>
-          <div slot="label">Reset <ion-text color="danger">Password</ion-text></div>
+          <ion-col class="ion-padding">
+            <div (click)="resetPassword()" class="link-cursor">Reset <ion-text color="danger">Password</ion-text></div>
+          </ion-col>  
         </form>
           <br/>
-          <ion-button expand="block" color="primary" fill="outline" (click)="login()">Login</ion-button>  
+          <ion-button expand="block" color="primary" fill="outline" (click)="login()" [disabled]="loginForm.invalid">Login</ion-button>  
 </ion-content>
 <ion-footer>
   <ion-toolbar>

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router, NavigationEnd  } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router, NavigationEnd, NavigationStart  } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { SdGenApiService } from './sd-gen-api.service';
+import { SdGenApiService } from './services/sd-gen-api.service';
 
 @Component({
   selector: 'app-root',
@@ -17,8 +17,7 @@ export class AppComponent {
     { title: 'Txt2Img', url: '/txt2img', icon: 'image' },
     { title: 'Folders', url: '/user-folder', icon: 'folder' },
     { title: 'images', url: '/user-folder-image', icon: 'images' },
-    { title: 'Profile', url: '/user-profile', icon: 'person' },
-    
+    { title: 'Profile', url: '/user-profile', icon: 'person' },    
   ];
   public menuDisabled = false;
 
@@ -29,15 +28,17 @@ export class AppComponent {
     this.sdGenApiService.postAuthLogout(token).subscribe((data) => {
       if (data.status === 200) {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         this.router.navigate(['/login']);
       }
     });
   }
+  
 
   ngOnInit() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        if (event.url === '/login') {
+        if (event.url === '/login' || event.url === '/register' || event.url === '/reset-password') {
           this.menuDisabled = true;
         } else if (this.appPages.map((x) => x.url).includes(window.location.pathname)) {
           this.menuDisabled = false;

@@ -1,6 +1,6 @@
 import { Component, OnInit, NgModule, Output, EventEmitter } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { SdGenApiService } from 'src/app/sd-gen-api.service';
+import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { CommonModule } from '@angular/common';
 
 @Component({

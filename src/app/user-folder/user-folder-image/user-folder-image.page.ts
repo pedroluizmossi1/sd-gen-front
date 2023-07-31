@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ToggleComponent } from 'src/app/menu/toggle/toggle.component';
-import { SdGenApiService } from 'src/app/sd-gen-api.service';
+import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { InfiniteScrollCustomEvent } from '@ionic/angular';

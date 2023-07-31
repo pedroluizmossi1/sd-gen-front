@@ -1,12 +1,16 @@
-<app-toggle [title]="'Sign Up'"></app-toggle>
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-title>Sign Up</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-<ion-progress-bar type="indeterminate" *ngIf="loginLoader"></ion-progress-bar>
+<ion-progress-bar type="indeterminate" *ngIf="loader"></ion-progress-bar>
 
 <ion-content class="ion-padding">
   
 
   <form [formGroup]="registerForm">
-    <ion-input label="Login" placeholder="Username" formControlName="login" label-placement="floating" fill="outline" placeholder="Type User"></ion-input>
+    <ion-input label="Login" placeholder="Username" formControlName="login" label-placement="floating" fill="outline" placeholder="Type User" [counter]="true" maxlength="20"></ion-input>
     <br/>
     <ion-input label="Password" type="password" formControlName="password" label-placement="floating" fill="outline" placeholder="Type Password"></ion-input>
     <br/>

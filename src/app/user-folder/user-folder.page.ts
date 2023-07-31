@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ToggleComponent } from '../menu/toggle/toggle.component';
-import { SdGenApiService } from 'src/app/sd-gen-api.service';
+import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { CreateFolderModalComponent } from './create-folder-modal/create-folder-modal.component';
-import { AlertService } from 'src/app/alert.service';
+import { AlertService } from 'src/app/services/alert.service';
 import { Router } from '@angular/router';
 
 @Component({

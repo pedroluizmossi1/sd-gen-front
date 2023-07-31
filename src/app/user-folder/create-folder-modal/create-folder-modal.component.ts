@@ -3,8 +3,8 @@ import { ModalController, AlertController } from '@ionic/angular';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { SdGenApiService } from 'src/app/sd-gen-api.service';
-import { AlertService } from 'src/app/alert.service';
+import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
+import { AlertService } from 'src/app/services/alert.service';
 
 @Component({
   selector: 'app-create-folder-modal',

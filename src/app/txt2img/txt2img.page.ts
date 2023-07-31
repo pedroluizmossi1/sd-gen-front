@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ToggleComponent } from '../menu/toggle/toggle.component';
-import { SdGenApiService } from 'src/app/sd-gen-api.service';
+import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { FullscreenImageDirective } from 'src/app/image/fullscreen-image.directive';
 import { SamplerSelectComponent } from './sampler-select/sampler-select.component';

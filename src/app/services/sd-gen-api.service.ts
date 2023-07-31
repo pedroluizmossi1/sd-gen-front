@@ -28,6 +28,15 @@ export class SdGenApiService {
     return this.http.post(`${this.apiUrl}/auth/logout/`, null, { headers: headers, observe: 'response' });
   }
 
+  postAuthResetPasswordToken(data: any): Observable<HttpResponse<any>> {
+    var params = new HttpParams().set('login', data.username);
+    return this.http.post(`${this.apiUrl}/auth/password/reset/token/`, null, { params: params, observe: 'response' });
+  }
+
+  postAuthResetPassword(data: any): Observable<HttpResponse<any>> {
+    var params = new HttpParams().set('login', data.username).set('reset_token', data.reset_token).set('new_password', data.new_password);
+    return this.http.put(`${this.apiUrl}/auth/password/reset/`, null, { params: params, observe: 'response' });
+  }
 
   // User
   getUserProfile(token: any): Observable<HttpResponse<any>> {

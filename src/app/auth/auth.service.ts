@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SdGenApiService } from 'src/app/sd-gen-api.service';
+import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 

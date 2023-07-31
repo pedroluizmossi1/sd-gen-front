@@ -1,25 +1,22 @@
 <app-toggle [title]="'Profile'"></app-toggle>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">txt2img</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-list>
-    <ion-item>
-      <ion-input label="Email" value="{{userProfile.email}}" [disabled]="true"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-input label="First Name" value="{{userProfile.first_name}}" [disabled]="true"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-input label="Last Name" value="{{userProfile.last_name}}" [disabled]="true"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-input label="Plan" value="{{userProfile.plan}}" [disabled]="true"></ion-input>
-    </ion-item>
-  </ion-list>
+<ion-content class="ion-padding">
+      <ion-grid>
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="auto" >
+            <img alt="Profile Picture" class="" class="ion-profile-image" src="{{userProfile.image}}" />
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <br/>
+      <ion-input label="Email" value="{{userProfile.email}}" [disabled]="true" label-placement="floating" fill="outline" placeholder="Type User"></ion-input>
+      <br/>
+      <ion-input label="First Name" value="{{userProfile.first_name}}" [disabled]="true" label-placement="floating" fill="outline" placeholder="Type User"></ion-input>
+      <br/>
+      <ion-input label="Last Name" value="{{userProfile.last_name}}" [disabled]="true" label-placement="floating" fill="outline" placeholder="Type User"></ion-input>
+      <br/>
+      <ion-input label="Plan" value="{{userProfile.plan}}" [disabled]="true" label-placement="floating" fill="outline" placeholder="Type User"></ion-input>
+      <br/>
 </ion-content>
 
 

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ToggleComponent } from '../menu/toggle/toggle.component';
-import { SdGenApiService } from 'src/app/sd-gen-api.service';
+import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user-profile',
@@ -20,9 +21,9 @@ export class UserProfilePage implements OnInit {
     email : '',
     first_name : '',
     last_name : '',
-    plan: ''
-  }
-
+    plan: '',
+    image: ''
+  };
 
   profile() {
     var token = localStorage.getItem('token');
