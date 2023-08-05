@@ -18,8 +18,30 @@
   
     <ion-card-content>
       <form [formGroup]="generateImageForm">
-      <ion-textarea label="Prompt" labelPlacement="floating" fill="outline" placeholder="Enter text" formControlName="prompt"></ion-textarea>
       <ion-grid>
+          <ion-textarea label="Positive Prompt" labelPlacement="floating" fill="outline" placeholder="Enter text" formControlName="prompt"></ion-textarea>
+        </ion-grid>
+        <ion-grid>
+          <ion-textarea class="negative-prompt" label="Negative Prompt" labelPlacement="floating" fill="outline" color="danger" placeholder="Enter text" formControlName="negative_prompt"></ion-textarea>
+      </ion-grid>
+      <ion-button fill="clear" expand="block" (click)="changeAdvancedToggle()">
+        <ion-icon name="chevron-up-outline" *ngIf="!advancedToggle"></ion-icon>
+        <ion-icon name="chevron-down-outline" *ngIf="advancedToggle"></ion-icon>
+      </ion-button>
+      <div [hidden]="advancedToggle">
+      <ion-grid>
+        <ion-row>
+          <ion-col *ngIf="modelVersion == 'SDXL'" #refinerCol>
+            <ion-range aria-label="Range with ticks" [pinFormatter]="pinFormatter" [ticks]="true" [snaps]="true" [min]="0" [max]="1" [step]="0.1" [pin]="true" [value]="0.1" #refinerRange (ionChange)="applySliderColor($event)">
+              <div slot="label">Refiner</div>
+            </ion-range>
+          </ion-col>
+          <ion-col *ngIf="modelVersion == 'SD15'" #refinerCol>
+            <ion-range aria-label="Range with ticks" [pinFormatter]="pinFormatter" [ticks]="true" [snaps]="true" [min]="1" [max]="2" [step]="0.1" [pin]="true" [value]="2" #refinerRange (ionChange)="applySliderColor($event)">
+              <div slot="label">Latent Upscale</div>
+            </ion-range>
+          </ion-col>
+        </ion-row>
         <ion-row>
           <ion-col><ion-input label="Width" label-placement="floating" fill="outline" value="512" type="number" formControlName="width"></ion-input></ion-col>
           <ion-col><ion-input label="Height" label-placement="floating" fill="outline" value="768" type="number" formControlName="height"></ion-input></ion-col>
@@ -28,7 +50,8 @@
       <ion-grid>
         <ion-row>
           <ion-col><ion-input label="Steps" label-placement="floating" fill="outline" value="20" type="number" formControlName="steps"></ion-input></ion-col>
-          <ion-col><app-sampler-select (sampler)="changeSamplerCallback($event)"></app-sampler-select></ion-col>
+          <ion-col *ngIf="modelVersion == 'SDXL'"><app-sampler-select [txt2imgType]="'SDXL'" (sampler)="changeSamplerCallback($event)"></app-sampler-select></ion-col>
+          <ion-col *ngIf="modelVersion == 'SD15'"><app-sampler-select [txt2imgType]="'SD15'" (sampler)="changeSamplerCallback($event)"></app-sampler-select></ion-col>
           <ion-col><app-get-folder-select (folder)="changeFolderCallback($event)"></app-get-folder-select></ion-col>
         </ion-row>
       </ion-grid>
@@ -39,11 +62,27 @@
           <ion-col><ion-input label="Cfg Scale" label-placement="floating" fill="outline" value="7" type="number" formControlName="cfg_scale"></ion-input></ion-col>
         </ion-row>
       </ion-grid>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <app-model-select 
+              (model)="changeModelCallback($event)" 
+              (modelVersion)="changeModelVersionCallback($event)"
+            >
+              Models
+            </app-model-select>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      </div>
+
+      
+      
     </form>
     </ion-card-content>
 
   </ion-card>
-
+  
 </ion-content>
 
 <ion-footer>

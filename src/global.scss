@@ -78,3 +78,13 @@
 .ion-profile-image {
   border-radius: 5px
 }
+
+.negative-prompt {
+   --highlight-color: var(--ion-color-danger) !important;
+}
+
+ion-range {
+  --bar-border-radius: 4px;
+  --knob-border-radius: 4px;
+  transform: translateY(-1rem)
+}

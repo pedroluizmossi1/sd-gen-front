@@ -1,0 +1,34 @@
+<ion-grid>
+  <ion-row>
+    <ion-col>
+    <ion-button id="select-model" expand="block">
+      Model
+      <ion-icon slot="end" name="layers-outline"></ion-icon>
+    </ion-button>
+  </ion-col>
+  <ion-col>
+    <ion-button id="select-model" color="warning" disabled="true" expand="block">
+      Lora
+      <ion-icon slot="end" name="copy-outline"></ion-icon>
+    </ion-button>
+  </ion-col>
+  </ion-row>
+</ion-grid>
+
+
+
+<ion-modal trigger="select-model" #modal>
+  <ng-template>
+    <app-typeahead
+      class="ion-page"
+      title="Select Model"
+      models_
+      [items]="modelsCategory"
+      [selectedItems]="selectedModel"
+      (selectionChange)="modelSelectionChanged($event)"
+      (selectionChangeVersion)="modelVersionSelectionChanged($event)"
+      (selectionCancel)="modal.dismiss()"
+    ></app-typeahead>
+  </ng-template>
+</ion-modal>
+

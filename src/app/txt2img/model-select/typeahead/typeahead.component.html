@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelChanges()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar (ionInput)="searchbarInput($event)"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light">
+  <ion-list *ngFor="let category of modelsCategory; trackBy: trackItems">
+    <div *ngIf="category.models.length > 0">
+    <ion-list-header>
+      <ion-label>
+        <h1>
+          {{ category.name }}
+        </h1></ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let model of category.models; trackBy: trackModels">
+      <ion-label (click)="modelSelectionChanged(model.path)" (click)="modelVersionSelectionChanged(model.version)">{{ model.name }}</ion-label>
+      <ion-label>{{ model.path }}</ion-label>
+    </ion-item>
+    </div>
+  </ion-list>
+</ion-content>

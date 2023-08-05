@@ -48,6 +48,12 @@ export class SdGenApiService {
     return this.http.post(`${this.apiUrl}/user/register/`, data, { observe: 'response' });
   }
 
+  // User Model
+  getUserModels(token: any): Observable<HttpResponse<any>> {
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.apiUrl}/user/model/all/`, { headers: headers, observe: 'response' });
+  }
+
   // Folder
 
   getUserFolders(token: any): Observable<HttpResponse<any>> {
@@ -79,11 +85,23 @@ export class SdGenApiService {
     return this.http.post(`${this.apiUrl}/user/image/txt2img/`, data, { headers: headers, params: params, observe: 'response' });
   }
 
+  postImageTxt2imgV2Sdxl(token: any, data: any, folder: any): Observable<HttpResponse<any>> {
+    var params = new HttpParams().set('folder', folder);
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(`${this.apiUrl}/user/image/txt2img/v2/sdxl/`, data, { headers: headers, params: params, observe: 'response' });
+  }
+
+  postImageTxt2imgV2Sd15(token: any, data: any, folder: any): Observable<HttpResponse<any>> {
+    var params = new HttpParams().set('folder', folder);
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(`${this.apiUrl}/user/image/txt2img/v2/sd15/`, data, { headers: headers, params: params, observe: 'response' });
+  }
+
   getUserImage(token: any, image_id: any): Observable<HttpResponse<Blob>> {
     var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     var param = new HttpParams().set('image_id', image_id);
     // Observe que o retorno aqui é HttpResponse<Blob>
-    return this.http.get(`${this.apiUrl}/user/image/get/`, { headers: headers, params: param, observe: 'response', responseType: 'blob' });
+    return this.http.get(`${this.apiUrl}/user/image/`, { headers: headers, params: param, observe: 'response', responseType: 'blob' });
   }
 
   // Plan
@@ -92,4 +110,5 @@ export class SdGenApiService {
     var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.get(`${this.apiUrl}/plan/`, { headers: headers, params: params, observe: 'response' });
   }
+
 }

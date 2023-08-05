@@ -35,5 +35,5 @@ export const routes: Routes = [
   {
     path: 'login/reset-password',
     loadComponent: () => import('./login/reset-password/reset-password.page').then( m => m.ResetPasswordPage)
-  },
+  }
 ]
