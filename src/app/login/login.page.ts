@@ -29,28 +29,30 @@ export class LoginPage implements OnInit {
   login() {
     this.loader = true;    
     const formData = this.loginForm.value;
+    if (formData.login) {
+      formData.login = formData.login.toLowerCase();
+    }
     var request = this.Sd.postAuthLogin(formData).subscribe(
       (res) => {
-      if (res.status === 200) {
-        localStorage.setItem('token', res.body.token);
-        this.Sd.getUserProfile(res.body.token).subscribe((data: any) => {
-          if (data.status === 200) {
-            localStorage.setItem('user', JSON.stringify(data.body));
-            window.location.href = '/txt2img';
-          } 
-        });
-      }
+        if (res.status === 200) {
+          localStorage.setItem('token', res.body.token);
+          this.Sd.getUserProfile(res.body.token).subscribe((data: any) => {
+            if (data.status === 200) {
+              localStorage.setItem('user', JSON.stringify(data.body));
+              window.location.href = '/txt2img';
+            } 
+          });
+        }
       },
       (err) => {
-      this.loader = false;
-      if (err.status === 401) {
-        this.alert.presentAlert('Error', 'Invalid credentials', 'The credentials you entered are invalid. Please try again.', ['OK'], 'error');
-      } else {
-        this.alert.presentAlert('Error', 'Unknown error', err.error.detail, ['OK'], 'error');
-      }
+        this.loader = false;
+        if (err.status === 401) {
+          this.alert.presentAlert('Error', 'Invalid credentials', 'The credentials you entered are invalid. Please try again.', ['OK'], 'error');
+        } else {
+          this.alert.presentAlert('Error', 'Unknown error', err.error.detail, ['OK'], 'error');
+        }
       },
-      () =>
-      { 
+      () => { 
         this.loader = false;
         request.unsubscribe();
       }

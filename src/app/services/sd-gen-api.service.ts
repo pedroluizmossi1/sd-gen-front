@@ -85,14 +85,16 @@ export class SdGenApiService {
     return this.http.post(`${this.apiUrl}/user/image/txt2img/`, data, { headers: headers, params: params, observe: 'response' });
   }
 
-  postImageTxt2imgV2Sdxl(token: any, data: any, folder: any): Observable<HttpResponse<any>> {
+  postImageTxt2imgV2Sdxl(token: any, data: any, folder: any, refiner: boolean): Observable<HttpResponse<any>> {
     var params = new HttpParams().set('folder', folder);
+    var params = new HttpParams().set('refiner', refiner);
     var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(`${this.apiUrl}/user/image/txt2img/v2/sdxl/`, data, { headers: headers, params: params, observe: 'response' });
   }
 
-  postImageTxt2imgV2Sd15(token: any, data: any, folder: any): Observable<HttpResponse<any>> {
+  postImageTxt2imgV2Sd15(token: any, data: any, folder: any, Latent: boolean): Observable<HttpResponse<any>> {
     var params = new HttpParams().set('folder', folder);
+    var params = new HttpParams().set('latent', Latent);
     var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(`${this.apiUrl}/user/image/txt2img/v2/sd15/`, data, { headers: headers, params: params, observe: 'response' });
   }
@@ -102,6 +104,11 @@ export class SdGenApiService {
     var param = new HttpParams().set('image_id', image_id);
     // Observe que o retorno aqui é HttpResponse<Blob>
     return this.http.get(`${this.apiUrl}/user/image/`, { headers: headers, params: param, observe: 'response', responseType: 'blob' });
+  }
+
+  getUserTxt2imgV2SdxlQueue(token: any): Observable<HttpResponse<any>> {
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.apiUrl}/user/image/txt2img/v2/sdxl/queue/`, { headers: headers, observe: 'response' });
   }
 
   // Plan

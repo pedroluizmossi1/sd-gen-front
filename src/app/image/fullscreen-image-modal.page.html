@@ -6,7 +6,12 @@
   
 
   <ion-fab slot="fixed" vertical="top" horizontal="end">
-    <ion-fab-button color="danger" (click)="dismissModal()">
+    <ion-fab-button color="danger" (click)="closeModal()">
       <ion-icon name="close-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="success" (click)="saveImage()">
+      <ion-icon name="cloud-download-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>

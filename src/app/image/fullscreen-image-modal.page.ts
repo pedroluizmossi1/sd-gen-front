@@ -16,9 +16,21 @@ export class FullscreenImageModalPage {
 
     showImage: boolean = false;
 
-    dismissModal() {
-        (document.querySelector('ion-modal') as HTMLIonModalElement).dismiss();
+    closeModal() {
+      (document.querySelector('ion-modal') as HTMLIonModalElement).dismiss();
+      const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+      document.dispatchEvent(escapeEvent);
     }
+
+    saveImage() {
+      const link = document.createElement('a');
+      link.href = this.imageUrl;
+      link.download = String(Math.random() * 100000000000000000 + 1) + '.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
 
     ngOnInit() {
       setTimeout(() => {
@@ -30,3 +42,7 @@ export class FullscreenImageModalPage {
     }
 
 }
+function querySelector(arg0: string) {
+  throw new Error('Function not implemented.');
+}
+

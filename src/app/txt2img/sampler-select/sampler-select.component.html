@@ -1,9 +1,11 @@
-<ion-select label="Sampler" label-placement="floating" fill="outline" label="Sampler"
+<ion-select   
+  shape="round"
+  label="Sampler" label-placement="floating" fill="outline" label="Sampler"
   interface="action-sheet"
   placeholder="Select One"
   formControlName="sampler"
   (ionChange)="handleChange($event)"
-  value="{{initialSampler}}"> <!-- Movido o formControlName aqui -->
+  value="{{samplerInput}}"> <!-- Movido o formControlName aqui -->
   <div *ngFor="let item of samplers" >
     <ion-select-option [value]="item" label="item">{{ item }}</ion-select-option>
   </div>

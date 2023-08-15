@@ -19,11 +19,13 @@ export class TypeaheadComponent  implements OnInit {
   @Output() selectionCancel = new EventEmitter<void>();
   @Output() selectionChange = new EventEmitter<string[]>();
   @Output() selectionChangeVersion = new EventEmitter<string[]>();
+  @Output() selectionChangeInfo = new EventEmitter<string[]>();
 
   modelsCategory: Item[] = [];
   models: Model[] = [];
   selectedModel: string[] = [];
   selectedModelVersion: string[] = [];
+  selectedModelInfo: string[] = [];
 
   ngOnInit() {
     this.modelsCategory = [...this.items];
@@ -67,5 +69,10 @@ export class TypeaheadComponent  implements OnInit {
   modelVersionSelectionChanged(selectedModelVersion: string) {
     this.selectedModelVersion = [selectedModelVersion];
     this.selectionChangeVersion.emit(this.selectedModelVersion);
+  }
+
+  modelInfoSelectionChanged(selectedModelInfo: string) {
+    this.selectedModelInfo = [selectedModelInfo];
+    this.selectionChangeInfo.emit(this.selectedModelInfo);
   }
 }

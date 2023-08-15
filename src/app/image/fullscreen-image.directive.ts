@@ -14,9 +14,6 @@ export class FullscreenImageDirective {
 
   @HostListener('click')
   async onClick() {
-    const imageUrl = (this.el.nativeElement as HTMLImageElement).src;
-    console.log(imageUrl)
-    var el = this.el.nativeElement.src 
     // Open the modal when the image is clicked
       const modal = await this.modalController.create({
         component: FullscreenImageModalPage,

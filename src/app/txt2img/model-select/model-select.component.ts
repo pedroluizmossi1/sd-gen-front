@@ -15,6 +15,7 @@ import { Item } from './typeahead/types';
 export class ModelSelectComponent implements OnInit{
   @Output() model = new EventEmitter<string>();
   @Output() modelVersion = new EventEmitter<string>();
+  @Output() modelInfo = new EventEmitter<string>();
   constructor(private Sd: SdGenApiService) { }
   @ViewChild('modal', { static: true }) modal!: IonModal;
   
@@ -38,7 +39,11 @@ export class ModelSelectComponent implements OnInit{
     this.modal.dismiss();
   }
 
-
+  modelInfoSelectionChanged(selectedItems: string[]) {
+    this.selectedModel = selectedItems;
+    this.modelInfo.emit(this.selectedModel[0]);
+    this.modal.dismiss();
+  }
 
   ngOnInit() {
     var token = localStorage.getItem('token');

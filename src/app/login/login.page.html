@@ -1,28 +1,39 @@
-<ion-header [translucent]="false">
-  <ion-toolbar>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-progress-bar type="indeterminate" *ngIf="loader"></ion-progress-bar>
 
-<ion-content class="ion-padding">
+<div class="ion-padding">
+
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <img src="https://prompthero.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJaWxqTURjME1qSTFNeTFsWlRBM0xUUXdNVEF0T1RNNVppMW1aV1ZsTnpobE1tRXdZallHT2daRlZBPT0iLCJleHAiOm51bGwsInB1ciI6ImJsb2JfaWQifX0=--343a0344d0f21ffc05e7329878fa9cb563d8c793/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0NBQWd3T2dwellYWmxjbnNKT2hOemRXSnpZVzF3YkdWZmJXOWtaVWtpQjI5dUJqb0dSVlE2Q25OMGNtbHdWRG9PYVc1MFpYSnNZV05sVkRvTWNYVmhiR2wwZVdsZiIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--935666d13f63ed5aca9daa2416340e3a90b6014e/prompthero-prompt-651c9dc25de.png" class="ion-card-header-image">
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+
         <form [formGroup]="loginForm">
-          <ion-input label="Login" placeholder="Username" formControlName="login" label-placement="floating" fill="outline" placeholder="Type User"></ion-input>
+          <ion-input label="Login" placeholder="Username" formControlName="login" label-placement="floating" fill="outline" placeholder="Type User" lowercase shape="round"></ion-input>
           <br/>
-          <ion-input label="Password" type="password" formControlName="password" label-placement="floating" fill="outline" placeholder="Type Password"></ion-input>
-          <ion-col class="ion-padding">
-            <div (click)="resetPassword()" class="link-cursor">Reset <ion-text color="danger">Password</ion-text></div>
-          </ion-col>  
+          <ion-input label="Password" type="password" formControlName="password" label-placement="floating" fill="outline" placeholder="Type Password" shape="round"></ion-input>
         </form>
           <br/>
-          <ion-button expand="block" color="primary" fill="outline" (click)="login()" [disabled]="loginForm.invalid">Login</ion-button>  
-</ion-content>
+          <ion-button expand="block" color="primary" fill="outline" (click)="login()" [disabled]="loginForm.invalid" shape="round">Login
+            <ion-icon slot="start" name="log-in-outline"></ion-icon>
+          </ion-button>  
+</div>
 <ion-footer>
-  <ion-toolbar>
-    <ion-item>
-      <ion-label>No Account?</ion-label>
-      <ion-button  color="secondary" fill="outline" (click)="register()">Sign up</ion-button>
-    </ion-item>
-  </ion-toolbar>
+    <div class="ion-padding">
+      <ion-row>
+      <ion-col>
+        <ion-button expand="block" (click)="resetPassword()" class="link-cursor" fill="outline" color="danger" shape="round">Reset Password
+          <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+        </ion-button>
+      </ion-col>  
+      <ion-col>
+      <ion-button expand="block" color="secondary" fill="outline" (click)="register()" shape="round">Sign up
+        <ion-icon slot="start" name="person-add-outline"></ion-icon></ion-button>
+      </ion-col>
+    </ion-row>
+    </div>
 </ion-footer>
+

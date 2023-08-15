@@ -43,10 +43,6 @@
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 
-.no-background {
-  background: transparent !important;
-}
-
 .ion-alert-custom.error {
   .alert-title {
     color: var(--ion-color-danger) !important;
@@ -83,8 +79,35 @@
    --highlight-color: var(--ion-color-danger) !important;
 }
 
+
+
 ion-range {
   --bar-border-radius: 4px;
   --knob-border-radius: 4px;
   transform: translateY(-1rem)
 }
+
+
+
+ion-card {
+  ion-card-header {
+    ion-card-title {
+      text-align: center;
+    }
+  }
+
+  ion-card-content {
+    .queue-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+
+      ion-label {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+

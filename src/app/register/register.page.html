@@ -1,33 +1,29 @@
-<ion-header [translucent]="false">
-  <ion-toolbar>
-    <ion-title>Sign Up</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-progress-bar type="indeterminate" *ngIf="loader"></ion-progress-bar>
 
 <ion-content class="ion-padding">
   
 
   <form [formGroup]="registerForm">
-    <ion-input label="Login" placeholder="Username" formControlName="login" label-placement="floating" fill="outline" placeholder="Type User" [counter]="true" maxlength="20"></ion-input>
+    <ion-input label="Login" placeholder="Username" formControlName="login" label-placement="floating" fill="outline" placeholder="Type User" [counter]="true" maxlength="20" shape="round"></ion-input>
     <br/>
-    <ion-input label="Password" type="password" formControlName="password" label-placement="floating" fill="outline" placeholder="Type Password"></ion-input>
+    <ion-input label="Password" type="password" formControlName="password" label-placement="floating" fill="outline" placeholder="Type Password" shape="round"></ion-input>
     <br/>
-    <ion-input label="Confirm Password" type="password" formControlName="confirmPassword" label-placement="floating" fill="outline" placeholder="Confirm Password"></ion-input>
+    <ion-input label="Confirm Password" type="password" formControlName="confirmPassword" label-placement="floating" fill="outline" placeholder="Confirm Password" shape="round"></ion-input>
     <br/>
-    <ion-input label="Email" type="email" formControlName="email" label-placement="floating" fill="outline" placeholder="Type Email"></ion-input>
+    <ion-input label="Email" type="email" formControlName="email" label-placement="floating" fill="outline" placeholder="Type Email" shape="round"></ion-input>
     <br/>
-    <ion-input label="First Name" type="text" formControlName="first_name" label-placement="floating" fill="outline" placeholder="Type First Name"></ion-input>
+    <ion-input label="First Name" type="text" formControlName="first_name" label-placement="floating" fill="outline" placeholder="Type First Name" shape="round"></ion-input>
     <br/>
-    <ion-input label="Last Name" type="text" formControlName="last_name" label-placement="floating" fill="outline" placeholder="Type Last Name"></ion-input>
+    <ion-input label="Last Name" type="text" formControlName="last_name" label-placement="floating" fill="outline" placeholder="Type Last Name" shape="round"></ion-input>
   </form>
     <br/>
-    <ion-button expand="block" color="primary" fill="outline" (click)="register()" [disabled]="registerForm.invalid">Sign Up</ion-button>  
+    <ion-button expand="block" color="primary" fill="outline" (click)="register()" [disabled]="registerForm.invalid" shape="round">Sign Up</ion-button>  
 
 </ion-content>
-<ion-footer>
-  <ion-toolbar>
-    <ion-button slot="end" color="danger" fill="outline" routerLink="/login">Cancel</ion-button>
-  </ion-toolbar>
+<ion-footer class="ion-padding">
+  <div>
+    <ion-button expand="block" color="danger" fill="outline" routerLink="/login" shape="round">Cancel
+      <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+    </ion-button>
+  </div>
 </ion-footer>

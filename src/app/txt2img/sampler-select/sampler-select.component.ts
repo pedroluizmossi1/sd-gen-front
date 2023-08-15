@@ -13,12 +13,14 @@ import { CommonModule } from '@angular/common';
 
 export class SamplerSelectComponent  implements OnInit {
   @Output() sampler = new EventEmitter<string>();
+  @Input() samplerInput: string = 'UniPC';
 
   @Input() txt2imgType: string = 'SD15';
   constructor(private Sd: SdGenApiService) { }
 
   samplers: any[] = [];
-  initialSampler = 'UniPC';
+  
+  initialSampler = this.samplerInput 
 
   handleChange(event: any) {
     this.initialSampler = event.target.value;

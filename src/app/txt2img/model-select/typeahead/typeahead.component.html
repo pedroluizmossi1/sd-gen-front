@@ -20,7 +20,7 @@
         </h1></ion-label>
     </ion-list-header>
     <ion-item *ngFor="let model of category.models; trackBy: trackModels">
-      <ion-label (click)="modelSelectionChanged(model.path)" (click)="modelVersionSelectionChanged(model.version)">{{ model.name }}</ion-label>
+      <ion-label (click)="modelSelectionChanged(model.path)" (click)="modelVersionSelectionChanged(model.version)" (click)="modelInfoSelectionChanged(model.info)">{{ model.name }}</ion-label>
       <ion-label>{{ model.path }}</ion-label>
     </ion-item>
     </div>
