@@ -35,5 +35,9 @@ export const routes: Routes = [
   {
     path: 'login/reset-password',
     loadComponent: () => import('./login/reset-password/reset-password.page').then( m => m.ResetPasswordPage)
+  },
+  {
+    path: 'face-swap',
+    loadComponent: () => import('./face-swap/face-swap.page').then( m => m.FaceSwapPage)
   }
 ]
