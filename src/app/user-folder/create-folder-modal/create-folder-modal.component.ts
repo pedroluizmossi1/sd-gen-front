@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ModalController, AlertController } from '@ionic/angular';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { AlertService } from 'src/app/services/alert.service';
 
@@ -11,7 +11,7 @@ import { AlertService } from 'src/app/services/alert.service';
   templateUrl: './create-folder-modal.component.html',
   styleUrls: ['./create-folder-modal.component.scss'],
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule]
+  imports: [IonicModule, ReactiveFormsModule],
 })
 export class CreateFolderModalComponent implements OnInit {
   @Input() name: string = '';
@@ -24,8 +24,8 @@ export class CreateFolderModalComponent implements OnInit {
   ) {}
 
   createFolderForm = new FormGroup({
-    name: new FormControl(''),
-    description: new FormControl(''),
+    name: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]),
+    description: new FormControl('', [Validators.required, Validators.maxLength(200)]),
     is_public: new FormControl(false),
     tags: new FormControl(['']),
   });

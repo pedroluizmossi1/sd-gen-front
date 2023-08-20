@@ -14,9 +14,8 @@ import { IonRange, RangeCustomEvent  } from '@ionic/angular';
 import { RangeValue } from '@ionic/core';
 import { Queue } from '../models/txt2img.models';
 import Swiper from 'swiper';
-
+import { AlertService } from '../services/alert.service';
 @Component({
-  selector: 'app-txt2img',
   templateUrl: './txt2img.page.html',
   styleUrls: ['./txt2img.page.scss'],
   standalone: true,
@@ -24,7 +23,7 @@ import Swiper from 'swiper';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
-  constructor(private Sd: SdGenApiService, private sanitizer: DomSanitizer) { }
+  constructor(private Sd: SdGenApiService, private sanitizer: DomSanitizer, private alert: AlertService) { }
   @ViewChild('refinerRange') refinerRange!: IonRange;
   @Input() modelVersion: string = 'SDXL';
   
@@ -97,10 +96,12 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
 
   changeFolderCallback(folder: string) {
     this.generateImageForm.patchValue({folder: folder});
+    this.folder = folder;
   }
 
   changeSamplerCallback(sampler: string) {
     this.generateImageForm.patchValue({sampler: sampler});
+    this.sampler = sampler;
   }
 
   changeModelCallback(model: string) {
@@ -122,7 +123,22 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
     console.log(modelInfo);
 
   }
-    
+  
+  resetPage(queue:any, placeHolder=true) {
+    if (placeHolder && this.images.length == 0) {
+      this.imagePlaceholder = true;
+    } else {
+      this.imagePlaceholder = false;
+    }
+    this.queue.running = false;
+    this.generateButton = false;
+    this.imageLoader = false;
+    clearInterval(queue);
+  }
+
+
+
+
   pinFormatter(value: number) {
     return value.toFixed(2);
   }
@@ -136,30 +152,17 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
       var refinerLatent = false;
       console.log(formData);
       var baseImage: Blob | null;
-      this.imageLoader = true; 
-      var queue = setInterval(() => {
-        this.Sd.getUserTxt2imgV2SdxlQueue(token).subscribe((data: any) => {
-          if (data.status === 200) {
-            if (data.body.queue_running >= 1) {
-              this.queue.running = true;
-            } else {
-              this.queue.running = false;
-            }
-            this.queue.queue_position = data.body.queue_position;
-            this.queue.queue_pending = data.body.queue_pending;
-            this.imagePlaceholder = false;
-          }
-        });
-      }, 2000);
+      this.imageLoader = true;
+      var queue = this.queueRunning(this.modelVersion);
       if (this.modelVersion == 'SDXL') {
         if (refinerLatentValue > 0 && refinerLatentValue <= 1) {
           refinerLatent = true;
           formData.refiner_denoise = refinerLatentValue;
         }
-        this.Sd.postImageTxt2imgV2Sdxl(token, formData, formData.folder, refinerLatent).subscribe((data: any) => {
-          if (data.status === 200) {
+        this.Sd.postImageTxt2imgV2Sdxl(token, formData, formData.folder, refinerLatent).subscribe(
+          (res) => {
             this.images = [];
-            var images_id = data.body.images;
+            var images_id = res.body.images;
             for (var i = 0; i < images_id.length; i++) {
               this.Sd.getUserImage(token, images_id[i]).subscribe((response: HttpResponse<Blob>) => {
                 // Obtenha o corpo da resposta que é a imagem Blob
@@ -167,25 +170,25 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
                 if (baseImage) {
                   let objectURL = URL.createObjectURL(baseImage);
                   this.images.push(this.sanitizer.bypassSecurityTrustUrl(objectURL));
-                  this.imagePlaceholder = false;
-                  this.queue.running = false;
-                  this.generateButton = false;
                 }
               });
             }
+            this.resetPage(queue, false);
+          },
+          (err) => {
+            this.resetPage(queue);
+            this.alert.presentAlert("Error generating image", err.status, err.error.detail, ["OK"], "error");
           }
-         this.imageLoader = false;
-         clearInterval(queue);
-        });
+        );
       } else if (this.modelVersion == 'SD15') {
         if (refinerLatentValue > 0 && refinerLatentValue <= 1) {
           refinerLatent = true;
           formData.latent_denoise = refinerLatentValue;
         }
-        this.Sd.postImageTxt2imgV2Sd15(token, formData, formData.folder, refinerLatent).subscribe((data: any) => {
-          if (data.status === 200) {
+        this.Sd.postImageTxt2imgV2Sd15(token, formData, formData.folder, refinerLatent).subscribe(
+          (res) => {
             this.images = [];
-            var images_id = data.body.images;
+            var images_id = res.body.images;
             for (var i = 0; i < images_id.length; i++) {
               this.Sd.getUserImage(token, images_id[i]).subscribe((response: HttpResponse<Blob>) => {
                 // Obtenha o corpo da resposta que é a imagem Blob
@@ -193,17 +196,16 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
                 if (baseImage) {
                   let objectURL = URL.createObjectURL(baseImage);
                   this.images.push(this.sanitizer.bypassSecurityTrustUrl(objectURL));
-                  this.imagePlaceholder = false;
-                  this.generateButton = false;
                 }
               });
             }
+            this.resetPage(queue, false);
+          },
+          (err) => {
+            this.resetPage(queue);
+            this.alert.presentAlert("Error generating image", err.status, err.error.detail, ["OK"], "error");
           }
-         this.imageLoader = false;
-          clearInterval(queue);
-          this.queue.running = false;
-          this.generateButton = false;
-        });
+        );
       }
     } 
   
@@ -269,6 +271,45 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
         } else if (this.modelVersion == 'SD15') {
         this.refinerRangelastEmittedValue = 0.0;
       }
+    }
+
+    queueRunning(modelType: string) {
+      var token = localStorage.getItem('token');
+      var queue: any = []
+      queue = setInterval(() => {
+        if (modelType == 'SDXL') {
+          this.Sd.getUserTxt2imgV2SdxlQueue(token).subscribe(
+            (res) => {
+              if (res.body.queue_running >= 1) {
+                this.queue.running = true;
+              } else {
+                this.queue.running = false;
+              }
+              this.queue.queue_position = res.body.queue_position;
+              this.queue.queue_pending = res.body.queue_pending;
+            },
+            (err) => {
+              this.resetPage(queue);
+            }
+          );
+        } else if (modelType == 'SD15') {
+          this.Sd.getUserTxt2imgV2Sd15Queue(token).subscribe(
+            (res) => {
+              if (res.body.queue_running >= 1) {
+                this.queue.running = true;
+              } else {
+                this.queue.running = false;
+              }
+              this.queue.queue_position = res.body.queue_position;
+              this.queue.queue_pending = res.body.queue_pending;
+            },
+            (err) => {
+              this.resetPage(queue);
+            }
+          );
+        }
+      }, 2000);
+      return queue;
     }
 
     ngOnChanges() {

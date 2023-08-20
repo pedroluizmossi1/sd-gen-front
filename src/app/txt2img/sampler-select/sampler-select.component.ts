@@ -37,10 +37,8 @@ export class SamplerSelectComponent  implements OnInit {
         response = response['resources'][0];
         if (this.txt2imgType === 'SDXL') {
           this.samplers = response['SDXL_SAMPLER'];
-          this.sampler.emit(this.samplers[0]);
         } else if (this.txt2imgType === 'SD15') {
           this.samplers = response['SD15_SAMPLER'];
-          this.sampler.emit(this.samplers[0]);
         }
       } else {
         console.log(data.status);

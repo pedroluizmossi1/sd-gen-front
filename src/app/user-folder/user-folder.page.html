@@ -1,14 +1,27 @@
 <app-toggle [title]="'Folders'"></app-toggle>
 
 <ion-content [fullscreen]="true">
-  <ion-list *ngFor="let item of folderList" >
-    <ion-item id="{{item._id}}" (click)="openFolder(item._id)">
+  <ion-grid class="noPadding">
+    <ion-row class="ion-justify-content-center">
+      <ion-col size-lg="5" class="noPadding">
+  <div *ngFor="let item of folderList">
+  <ion-list class="noPadding">
+    <ion-item id="{{item._id}}" button (click)="openFolder(item._id)">
       <ion-icon name="folder" slot="start"></ion-icon>
       <ion-label>{{item.name}}</ion-label>
-      <!-- Add an icon to show selection status -->
-      <ion-icon [name]="item.selected ? 'checkmark-circle' : 'ellipse-outline'" *ngIf="deleteMode"></ion-icon>
+      <ion-label slot="end">Images:</ion-label>
+      <ion-badge slot="end" color="primary">{{item.images.length}}</ion-badge>
     </ion-item>
+    <ion-item color="danger" *ngIf="deleteMode">
+      <ion-toggle (click)="markFolderToDelete(item._id)" color="warning">Delete Folder?</ion-toggle>
+    </ion-item>
+    <gallery gesture="true" id="{{item.name}}" [items]="images" thumbPosition="bottom"></gallery>
   </ion-list>
+  <br *ngIf="desktop" />
+  </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="!deleteMode">
     <ion-fab-button>
       <ion-icon name="chevron-up-circle"></ion-icon>

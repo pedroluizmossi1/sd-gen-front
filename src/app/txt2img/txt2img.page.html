@@ -1,103 +1,112 @@
 <app-toggle [title]="'Txt2Img'"></app-toggle>
 
-<ion-content [fullscreen]="true">
 
-  
-    <ion-grid>
-        <swiper-container pagination="true">
-        <swiper-slide lazy="true" *ngFor="let imageUrl of images">
-          <img appFullscreenImage [src]="imageUrl" *ngIf="imageUrl" class="ion-card-header-image">
+<ion-content [fullscreen]="true">
+  <ion-progress-bar type="indeterminate" *ngIf="imageLoader" class="progressLoader"></ion-progress-bar>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-lg="7" size="12">
+        <ion-card-header class="ion-card-header-center noPadding" [hidden]="true">
+          
+          <div *ngIf="imageLoader">
+          <ion-segment color="success" value="success">
+            <ion-segment-button value="success" *ngIf="queue.running">
+              <ion-label class="queue-text">Generating...</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+          <ion-segment color="primary" value="primary" *ngIf="!queue.running">
+            <ion-segment-button value="segment" value="warning">
+              <ion-label class="queue-text">Queue Lenght: {{ queue.queue_pending }}</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="primary" >
+              <ion-label class="queue-text">Queue Position: {{ queue.queue_position }}</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+        <ion-icon name="image-outline" class="imageIconSizePlaceholder"  *ngIf="imagePlaceholder"></ion-icon>
+        </ion-card-header>
+    <ion-grid class="imageMaxScreen">
+        <swiper-container pagination="true" thumbs-swiper=".mySwiper2" space-between="5">
+        <swiper-slide *ngFor="let imageUrl of images">
+          <img appFullscreenImage [src]="imageUrl" *ngIf="imageUrl" class="ion-card-header-image " alt="">
+        </swiper-slide>
+      </swiper-container>
+      <swiper-container space-between="5" slides-per-view="4" free-mode="true"
+                        watch-slides-progress="true" class="mySwiper2">
+        <swiper-slide *ngFor="let imageUrl of images">
+          <img [src]="imageUrl" *ngIf="imageUrl" class="ion-card-header-image" alt="">
         </swiper-slide>
       </swiper-container>
     </ion-grid>
-      <ion-card-header class="ion-card-header-center">
-        <ion-progress-bar type="indeterminate" *ngIf="imageLoader"></ion-progress-bar>
-        <ion-icon name="image-outline" class="imageIconSizePlaceholder" *ngIf="imagePlaceholder"></ion-icon>
-        <div *ngIf="imageLoader">
-        <ion-segment color="success" value="success">
-          <ion-segment-button value="success" *ngIf="queue.running">
-            <ion-label class="queue-text">Generating...</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-        <ion-segment color="warning" value="warning" *ngIf="!queue.running">
-          <ion-segment-button value="segment" value="warning">
-            <ion-label class="queue-text">Queue Lenght: {{ queue.queue_pending }}</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-        <ion-segment color="primary" value="primary" *ngIf="!queue.running">
-          <ion-segment-button value="primary" >
-            <ion-label class="queue-text">Queue Position: {{ queue.queue_position }}</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </div>
-      
-      </ion-card-header>
+      </ion-col>
+      <ion-col size-lg="5" size="12" class="noPadding">
+        <ion-card-content>
+          <form [formGroup]="generateImageForm">
+          <ion-grid>
+              <ion-textarea [autoGrow]="true" shape="round" label="Positive Prompt" labelPlacement="floating" fill="outline" placeholder="Enter text" formControlName="prompt" ></ion-textarea>
+            </ion-grid>
+            <ion-grid>
+              <ion-textarea [autoGrow]="true" shape="round" class="negative-prompt" label="Negative Prompt" labelPlacement="floating" fill="outline" color="danger" placeholder="Enter text" formControlName="negative_prompt"></ion-textarea>
+          </ion-grid>
+          <ion-button fill="clear" expand="block" shape="round" (click)="changeAdvancedToggle()">
+            <ion-icon name="chevron-up-outline" *ngIf="!advancedToggle"></ion-icon>
+            <ion-icon name="chevron-down-outline" *ngIf="advancedToggle"></ion-icon>
+          </ion-button>
+          <div [hidden]="advancedToggle">
+          <ion-grid>
+            <ion-row>
+              <ion-col><ion-input shape="round" label="Width" label-placement="floating" fill="outline" value="512" type="number" formControlName="width"></ion-input></ion-col>
+              <ion-col><ion-input shape="round" label="Height" label-placement="floating" fill="outline" value="768" type="number" formControlName="height"></ion-input></ion-col>
+              <ion-col><ion-input shape="round" label="Steps" label-placement="floating" fill="outline" value="20" type="number" formControlName="steps"></ion-input></ion-col>
+            </ion-row>
+          </ion-grid>
+          <ion-grid>
+            <ion-row>
+              <ion-col *ngIf="modelVersion == 'SDXL'"><app-sampler-select [samplerInput]="sampler" [txt2imgType]="'SDXL'" (sampler)="changeSamplerCallback($event)"></app-sampler-select></ion-col>
+              <ion-col *ngIf="modelVersion == 'SD15'"><app-sampler-select [samplerInput]="sampler" [txt2imgType]="'SD15'" (sampler)="changeSamplerCallback($event)"></app-sampler-select></ion-col>
+              <ion-col><app-get-folder-select (folder)="changeFolderCallback($event)"></app-get-folder-select></ion-col>
+            </ion-row>
+          </ion-grid>
+          <ion-grid>
+            <ion-row>
+              <ion-col><ion-input shape="round" label="Seed" label-placement="floating" fill="outline" value="-1" type="number" formControlName="seed"></ion-input></ion-col>
+              <ion-col><ion-input shape="round" label="batchSize" label-placement="floating" fill="outline" value="1" type="number" formControlName="batch_size"></ion-input></ion-col>
+              <ion-col><ion-input shape="round" label="Cfg Scale" label-placement="floating" fill="outline" value="7" type="number" formControlName="cfg_scale"></ion-input></ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col *ngIf="modelVersion == 'SDXL'" #refinerCol>
+                <ion-range aria-label="Range with ticks" [pinFormatter]="pinFormatter" [ticks]="true" [snaps]="true" [min]="0" [max]="1" [step]="0.1" [pin]="true" [value]="0.0" #refinerRange (ionChange)="applySliderColor($event)">
+                  <div slot="label">Refiner</div>
+                </ion-range>
+              </ion-col>
+              <ion-col *ngIf="modelVersion == 'SD15'" #refinerCol>
+                <ion-range aria-label="Range with ticks" [pinFormatter]="pinFormatter" [ticks]="true" [snaps]="true" [min]="0" [max]="1" [step]="0.05" [pin]="true" [value]="0.0" #refinerRange (ionChange)="applySliderColor($event)">
+                  <div slot="label">Latent Upscale</div>
+                </ion-range>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+                <app-model-select 
+                  (model)="changeModelCallback($event)" 
+                  (modelVersion)="changeModelVersionCallback($event)"
+                  (modelInfo)="changeModelInfoCallback($event)"
+                >
+                  Models
+                </app-model-select>
+          </div>
+        </form>
+        </ion-card-content>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
   
-    <ion-card-content>
-      <form [formGroup]="generateImageForm">
-      <ion-grid>
-          <ion-textarea shape="round" label="Positive Prompt" labelPlacement="floating" fill="outline" placeholder="Enter text" formControlName="prompt" ></ion-textarea>
-        </ion-grid>
-        <ion-grid>
-          <ion-textarea shape="round" class="negative-prompt" label="Negative Prompt" labelPlacement="floating" fill="outline" color="danger" placeholder="Enter text" formControlName="negative_prompt"></ion-textarea>
-      </ion-grid>
-      <ion-button fill="clear" expand="block" (click)="changeAdvancedToggle()">
-        <ion-icon name="chevron-up-outline" *ngIf="!advancedToggle"></ion-icon>
-        <ion-icon name="chevron-down-outline" *ngIf="advancedToggle"></ion-icon>
-      </ion-button>
-      <div [hidden]="advancedToggle">
-      <ion-grid>
-        <ion-row>
-          <ion-col><ion-input shape="round" label="Width" label-placement="floating" fill="outline" value="512" type="number" formControlName="width"></ion-input></ion-col>
-          <ion-col><ion-input shape="round" label="Height" label-placement="floating" fill="outline" value="768" type="number" formControlName="height"></ion-input></ion-col>
-          <ion-col><ion-input shape="round" label="Steps" label-placement="floating" fill="outline" value="20" type="number" formControlName="steps"></ion-input></ion-col>
-        </ion-row>
-      </ion-grid>
-      <ion-grid>
-        <ion-row>
-          <ion-col *ngIf="modelVersion == 'SDXL'"><app-sampler-select [samplerInput]="sampler" [txt2imgType]="'SDXL'" (sampler)="changeSamplerCallback($event)"></app-sampler-select></ion-col>
-          <ion-col *ngIf="modelVersion == 'SD15'"><app-sampler-select [samplerInput]="sampler" [txt2imgType]="'SD15'" (sampler)="changeSamplerCallback($event)"></app-sampler-select></ion-col>
-          <ion-col><app-get-folder-select (folder)="changeFolderCallback($event)"></app-get-folder-select></ion-col>
-        </ion-row>
-      </ion-grid>
-      <ion-grid>
-        <ion-row>
-          <ion-col><ion-input shape="round" label="Seed" label-placement="floating" fill="outline" value="-1" type="number" formControlName="seed"></ion-input></ion-col>
-          <ion-col><ion-input shape="round" label="batchSize" label-placement="floating" fill="outline" value="1" type="number" formControlName="batch_size"></ion-input></ion-col>
-          <ion-col><ion-input shape="round" label="Cfg Scale" label-placement="floating" fill="outline" value="7" type="number" formControlName="cfg_scale"></ion-input></ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col *ngIf="modelVersion == 'SDXL'" #refinerCol>
-            <ion-range aria-label="Range with ticks" [pinFormatter]="pinFormatter" [ticks]="true" [snaps]="true" [min]="0" [max]="1" [step]="0.1" [pin]="true" [value]="0.0" #refinerRange (ionChange)="applySliderColor($event)">
-              <div slot="label">Refiner</div>
-            </ion-range>
-          </ion-col>
-          <ion-col *ngIf="modelVersion == 'SD15'" #refinerCol>
-            <ion-range aria-label="Range with ticks" [pinFormatter]="pinFormatter" [ticks]="true" [snaps]="true" [min]="0" [max]="1" [step]="0.05" [pin]="true" [value]="0.0" #refinerRange (ionChange)="applySliderColor($event)">
-              <div slot="label">Latent Upscale</div>
-            </ion-range>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-            <app-model-select 
-              (model)="changeModelCallback($event)" 
-              (modelVersion)="changeModelVersionCallback($event)"
-              (modelInfo)="changeModelInfoCallback($event)"
-            >
-              Models
-            </app-model-select>
-      </div>
-    </form>
-    </ion-card-content>
-
-    
-
   
 </ion-content>
 
-<ion-footer>
-  <div class="ion-padding">
-    <ion-button expand="block" color="primary" (click)="generateImage()" shape="round" [disabled]="generateButton">Generate Image</ion-button>
+<ion-footer class="glassFooter">
+  <div class="ion-padding noPaddingTop">
+    <ion-button expand="block" fill="outline" (click)="generateImage()" shape="round" [disabled]="generateButton">Generate Image</ion-button>
   </div>
 </ion-footer>
 

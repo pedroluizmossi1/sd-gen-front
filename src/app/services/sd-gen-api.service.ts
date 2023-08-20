@@ -44,6 +44,11 @@ export class SdGenApiService {
     return this.http.get(`${this.apiUrl}/user/profile/`, { headers: headers, observe: 'response' });
   }
 
+  putUserProfileImage(token: any, data: any): Observable<HttpResponse<any>> {
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.put(`${this.apiUrl}/user/profile/image/`, data, { headers: headers, observe: 'response' });
+  }
+
   postAuthRegister(data: any): Observable<HttpResponse<any>> {
     return this.http.post(`${this.apiUrl}/user/register/`, data, { observe: 'response' });
   }
@@ -86,15 +91,13 @@ export class SdGenApiService {
   }
 
   postImageTxt2imgV2Sdxl(token: any, data: any, folder: any, refiner: boolean): Observable<HttpResponse<any>> {
-    var params = new HttpParams().set('folder', folder);
-    var params = new HttpParams().set('refiner', refiner);
+    var params = new HttpParams().set('folder', folder,).set('refiner', refiner);
     var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(`${this.apiUrl}/user/image/txt2img/v2/sdxl/`, data, { headers: headers, params: params, observe: 'response' });
   }
 
   postImageTxt2imgV2Sd15(token: any, data: any, folder: any, Latent: boolean): Observable<HttpResponse<any>> {
-    var params = new HttpParams().set('folder', folder);
-    var params = new HttpParams().set('latent', Latent);
+    var params = new HttpParams().set('folder', folder).set('Latent', Latent);
     var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(`${this.apiUrl}/user/image/txt2img/v2/sd15/`, data, { headers: headers, params: params, observe: 'response' });
   }
@@ -111,6 +114,17 @@ export class SdGenApiService {
     return this.http.get(`${this.apiUrl}/user/image/txt2img/v2/sdxl/queue/`, { headers: headers, observe: 'response' });
   }
 
+  getUserTxt2imgV2Sd15Queue(token: any): Observable<HttpResponse<any>> {
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.apiUrl}/user/image/txt2img/v2/sd15/queue/`, { headers: headers, observe: 'response' });
+  }
+
+  deleteUserImage(token: any, image_id: any): Observable<HttpResponse<any>> {
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    var param = new HttpParams().set('image_id', image_id);
+    return this.http.delete(`${this.apiUrl}/user/image/`, { headers: headers, params: param, observe: 'response' });
+  }
+  
   // Plan
   getUserPlan(token: any, plan: any): Observable<HttpResponse<any>> {
     var params = new HttpParams().set('id_or_plan', plan);

@@ -1,24 +1,24 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+      <ion-button expand="block" color="danger" fill="outline" shape="round" (click)="cancel()">Cancel</ion-button>
     </ion-buttons>
     <ion-title>New Folder</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+      <ion-button expand="block" color="success" fill="outline" shape="round" (click)="confirm()" [strong]="true" [disabled]="createFolderForm.invalid">Save</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
   <form [formGroup]="createFolderForm">
     <ion-item>
-      <ion-input type="text" formControlName="name" label="Name"></ion-input>
+      <ion-input label="Name" labelPlacement="floating" type="text" formControlName="name" label="Name"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-input type="text" formControlName="description" label="Description"></ion-input>
+      <ion-input label="Description" labelPlacement="floating" type="text" formControlName="description" label="Description"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-checkbox formControlName="is_public">Public?</ion-checkbox>
+      <ion-checkbox mode="ios" formControlName="is_public" >Public?</ion-checkbox>
     </ion-item>
   
   </form>

@@ -6,14 +6,15 @@ import { IonicModule } from '@ionic/angular';
 import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { AlertService } from '../services/alert.service';
 import { ToggleComponent } from '../menu/toggle/toggle.component';
-
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, ReactiveFormsModule, ToggleComponent]
+  imports: [IonicModule, CommonModule, ReactiveFormsModule, ToggleComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class LoginPage implements OnInit {
 
@@ -24,7 +25,9 @@ export class LoginPage implements OnInit {
   loginForm = new FormGroup({
     login: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]),
     password: new FormControl('', [Validators.required, Validators.maxLength(50)]),
-  })
+  })  
+
+  loginValue: string = '';
 
   login() {
     this.loader = true;    
@@ -49,6 +52,7 @@ export class LoginPage implements OnInit {
         if (err.status === 401) {
           this.alert.presentAlert('Error', 'Invalid credentials', 'The credentials you entered are invalid. Please try again.', ['OK'], 'error');
         } else {
+          console.log(err);
           this.alert.presentAlert('Error', 'Unknown error', err.error.detail, ['OK'], 'error');
         }
       },
@@ -66,6 +70,8 @@ export class LoginPage implements OnInit {
   resetPassword() {
     this.router.navigate(['/login/reset-password']);
   }
+
+  
 
   ngOnInit() {
   }

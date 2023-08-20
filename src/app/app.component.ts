@@ -14,12 +14,24 @@ import { SdGenApiService } from './services/sd-gen-api.service';
 
 export class AppComponent {
   public appPages = [
-    { title: 'Txt2Img', url: '/txt2img', icon: 'image' },
-    { title: 'Folders', url: '/user-folder', icon: 'folder' },
-    { title: 'images', url: '/user-folder-image', icon: 'images' },
-    { title: 'Profile', url: '/user-profile', icon: 'person' },    
+    { title: 'Txt2Img', url: '/txt2img', icon: 'image', color: 'tertiary' },
+    { title: 'Gallery', url: '/user-folder', icon: 'aperture', color: 'success' },
+    { title: 'Profile', url: '/user-profile', icon: 'person', color: 'primary' },
   ];
   public menuDisabled = false;
+  
+  public standAloneMenuUrl = [
+    { title: 'image-folder', url: '/user-folder-image', icon: 'image' },
+  ];
+
+  userProfile = {
+    email : '',
+    first_name : '',
+    last_name : '',
+    plan: '',
+    profile_picture: ''
+  };
+  
 
   constructor(private router: Router, private sdGenApiService: SdGenApiService) {}
 
@@ -36,11 +48,13 @@ export class AppComponent {
   
 
   ngOnInit() {
+    this.userProfile = JSON.parse(localStorage.getItem('user') || '{}');
+    this.userProfile.profile_picture = 'data:image/jpeg;base64,' + this.userProfile.profile_picture
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         if (event.url === '/login' || event.url === '/register' || event.url === '/reset-password') {
           this.menuDisabled = true;
-        } else if (this.appPages.map((x) => x.url).includes(window.location.pathname)) {
+        } else if (this.appPages.map((x) => x.url).includes(window.location.pathname) || this.standAloneMenuUrl.map((x) => x.url).includes(window.location.pathname)) {
           this.menuDisabled = false;
         } else {
           this.menuDisabled = true;

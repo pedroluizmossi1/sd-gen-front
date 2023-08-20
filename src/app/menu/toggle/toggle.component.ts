@@ -12,11 +12,11 @@ import { CommonModule } from '@angular/common';
 export class ToggleComponent  implements OnInit {
   @Input() title: string = 'toggle';
   
+  
 
   constructor() { }
 
   ngOnInit() {
-
   }
 
 }

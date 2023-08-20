@@ -8,26 +8,33 @@ import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { CreateFolderModalComponent } from './create-folder-modal/create-folder-modal.component';
 import { AlertService } from 'src/app/services/alert.service';
 import { Router } from '@angular/router';
-
+import { GalleryModule, GalleryItem, ImageItem } from 'ng-gallery';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { Gallery } from 'ng-gallery';
+import { Inject } from '@angular/core';
 @Component({
   selector: 'app-user-folder',
   templateUrl: './user-folder.page.html',
   styleUrls: ['./user-folder.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ToggleComponent]
+  imports: [IonicModule, CommonModule, FormsModule, ToggleComponent, GalleryModule],
 })
 export class UserFolderPage implements OnInit {
 
-  constructor(private Sd: SdGenApiService, private modalCtrl: ModalController, private alertService: AlertService, private router: Router) { }
-
+  constructor(private Sd: SdGenApiService, private modalCtrl: ModalController, private alertService: AlertService, private router: Router, private sanitizer: DomSanitizer, @Inject(Gallery) private gallery: Gallery ) { }
+  images: GalleryItem[] = [];
+  nextBacthImages: any[] = [];
   folderList = [
     {
       name: '',
       _id: '',
+      images: [] as GalleryItem[],
       selected: false  // Add isSelected property for each folder
     }
   ];
-
+  mobile = false;
+  desktop = false;
   deleteMode = false;
 
   folders() {
@@ -35,9 +42,8 @@ export class UserFolderPage implements OnInit {
     this.Sd.getUserFolders(token).subscribe((data: any) => {
       if (data.status === 200) {
         this.folderList = data.body;
-        // Chamando o método para extrair os nomes das pastas após receber a lista de pastas
         this.extractFolderName_id();
-
+        console.log(this.folderList);
       } else {
         console.log(data.body);
       }
@@ -55,16 +61,60 @@ export class UserFolderPage implements OnInit {
     });
   }
 
-  extractFolderName_id() {
-    var folderName_id = [];
+
+  async extractFolderName_id() {
+    const token = localStorage.getItem('token') as string;
+    const folderName_id = [];
+  
+    const imagesPerLoad = 5; // Number of images to load in one batch
+  
     for (let i = 0; i < this.folderList.length; i++) {
-      folderName_id.push({
+      const folderData = {
         name: this.folderList[i].name,
-        _id: this.folderList[i]._id
+        _id: this.folderList[i]._id,
+        images: [],
+        selected: false,
+        selectedIndexe: [] as number[]
+      };
+  
+      const galleryRef = this.gallery.ref(folderData.name);
+      galleryRef.indexChanged.subscribe(async (index) => {
+        const currentImageIndex = index.currIndex as number;
+        const totalImages = this.folderList[i].images.length;
+        const remainingImages = this.folderList[i].images.slice(currentImageIndex + 1);
+        const nextBatch = remainingImages.slice(0, imagesPerLoad);
+        this.nextBacthImages = remainingImages.slice(0, imagesPerLoad);
+        const galleryImages = index.items as number[];
+        const totalImagesGallery = galleryImages.length;
+        if ( currentImageIndex === totalImagesGallery - 1) {
+          await this.loadImageBatch(localStorage.getItem('token') as string, this.nextBacthImages as string[], folderData.name);
+        }
+        
       });
+  
+      const initialImages = this.folderList[i].images.slice(0, imagesPerLoad);
+      await this.loadImageBatch(token, initialImages as string[], folderData.name);
+      
+      folderName_id.push(folderData);
     }
+  
     return folderName_id;
   }
+  
+  async loadImageBatch(token: string, imageIds: string[], galleryName: string) {
+    for (const imageId of imageIds) {
+      const response = await this.Sd.getUserImage(token, imageId).toPromise() as HttpResponse<Blob>;
+      const baseImage = response.body;
+  
+      if (baseImage) {
+        const galleryRef = this.gallery.ref(galleryName);
+        const objectURL = URL.createObjectURL(baseImage);
+        galleryRef.addImage({ src: objectURL, thumb: objectURL });
+      }
+    }
+  }
+  
+  
 
   newFolderParam = {
     "name": "collection",
@@ -88,12 +138,21 @@ export class UserFolderPage implements OnInit {
   }
 
   markFoldersToDelete() {
-    var token = localStorage.getItem('token');
     this.deleteMode = !this.deleteMode;
     for (let i = 0; i < this.folderList.length; i++) {
       console.log(this.folderList[i].selected);
     }
   }
+
+  markFolderToDelete(folder_id: any) {
+    for (let i = 0; i < this.folderList.length; i++) {
+      if (this.folderList[i]._id === folder_id) {
+        this.folderList[i].selected = !this.folderList[i].selected;
+        console.log(this.folderList[i].selected);
+      }
+    }
+  }
+
 
   deleteFolders() {
     var token = localStorage.getItem('token');
@@ -122,10 +181,7 @@ export class UserFolderPage implements OnInit {
       this.folderList[i].selected = false;
     }
   }
-    
-  toggleFolderSelection(folder: any) {
-    console.log(folder);
-  }
+  
   
   message = 'This modal example uses the modalController to present and dismiss modals.';
 
@@ -141,10 +197,28 @@ export class UserFolderPage implements OnInit {
       this.message = `Hello, ${data}!`;
     }
   }
-
-
+   
   ngOnInit() {
+    if (window.screen.width >= 1024) { // 768px portrait
+      this.desktop = true;
+      console.log('desktop');
+    }
     this.folders();
+    setTimeout(() => {
+      console.log(this.folderList);
+    }, 100);
+    for (let i = 0; i < this.folderList.length; i++) {
+    const galleryRef = this.gallery.ref(this.folderList[i].name);
+    galleryRef.indexChanged.subscribe(async (index) => {
+      const currentImageIndex = index.currIndex as number;
+      const galleryImages = index.items as number[];
+      const totalImages = galleryImages.length;
+      console.log(totalImages);
+      if ( currentImageIndex === totalImages - 1) {
+        await this.loadImageBatch(localStorage.getItem('token') as string, this.nextBacthImages as string[], 'root');
+      }
+    }
+    );
   }
-
+}
 }

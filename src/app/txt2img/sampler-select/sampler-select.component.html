@@ -5,7 +5,7 @@
   placeholder="Select One"
   formControlName="sampler"
   (ionChange)="handleChange($event)"
-  value="{{samplerInput}}"> <!-- Movido o formControlName aqui -->
+  value="{{samplerInput}}">
   <div *ngFor="let item of samplers" >
     <ion-select-option [value]="item" label="item">{{ item }}</ion-select-option>
   </div>

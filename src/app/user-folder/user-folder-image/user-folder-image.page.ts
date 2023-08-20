@@ -8,13 +8,14 @@ import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
+import { FullscreenImageDirective } from 'src/app/image/fullscreen-image.directive';
 
 @Component({
   selector: 'app-user-folder-image',
   templateUrl: './user-folder-image.page.html',
   styleUrls: ['./user-folder-image.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ToggleComponent]
+  imports: [IonicModule, CommonModule, FormsModule, ToggleComponent, FullscreenImageDirective],
 })
 export class UserFolderImagePage implements OnInit {
   @Input() images: any[] = [];

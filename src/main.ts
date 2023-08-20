@@ -9,6 +9,8 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 import { register } from 'swiper/element/bundle';
+import { GALLERY_CONFIG, GalleryConfig } from 'ng-gallery';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 // register Swiper custom elements
 register();
 
@@ -18,13 +20,17 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy, },
     importProvidersFrom(IonicModule.forRoot({}), [
       HttpClientModule,
       FormsModule,
       FormGroup,
     ]),
-    
+    { provide: GALLERY_CONFIG,useValue: {
+      autoHeight: true,
+      imageSize: 'cover'
+    } as GalleryConfig },
+    NgxJsonViewerModule,    
     provideRouter(routes),
   ],
 });

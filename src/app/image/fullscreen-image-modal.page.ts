@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import PinchZoom from 'pinch-zoom-js';
+import { SdGenApiService } from '../services/sd-gen-api.service';
+import { AlertService } from '../services/alert.service';
 
 @Component({
   selector: 'app-fullscreen-image-modal',
@@ -12,8 +14,7 @@ import PinchZoom from 'pinch-zoom-js';
 export class FullscreenImageModalPage {
     @Input() imageUrl!: string;
 
-  constructor() { }
-
+  constructor(private sd: SdGenApiService, private alert: AlertService) { }
     showImage: boolean = false;
 
     closeModal() {
@@ -30,8 +31,6 @@ export class FullscreenImageModalPage {
       link.click();
       document.body.removeChild(link);
     }
-
-
     ngOnInit() {
       setTimeout(() => {
         this.showImage = true;
@@ -42,7 +41,3 @@ export class FullscreenImageModalPage {
     }
 
 }
-function querySelector(arg0: string) {
-  throw new Error('Function not implemented.');
-}
-
