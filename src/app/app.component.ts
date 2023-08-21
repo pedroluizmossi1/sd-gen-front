@@ -15,6 +15,7 @@ import { SdGenApiService } from './services/sd-gen-api.service';
 export class AppComponent {
   public appPages = [
     { title: 'Txt2Img', url: '/txt2img', icon: 'image', color: 'tertiary' },
+    { title: 'Face Swap', url: '/face-swap', icon: 'happy', color: 'warning' },
     { title: 'Gallery', url: '/user-folder', icon: 'aperture', color: 'success' },
     { title: 'Profile', url: '/user-profile', icon: 'person', color: 'primary' },
   ];

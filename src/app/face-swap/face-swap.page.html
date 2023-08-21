@@ -1,9 +1,100 @@
 <app-toggle [title]="'FaceSwap'"></app-toggle>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">faceSwaps</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-row class="ion-justify-content-center ion-align-items-center">
+          <ion-col size-lg="7" size="12" style="text-align: center;">
+            <div *ngFor="let image of faceSwapimages">
+              <img style="max-height: 350px;" [src]="image" class="ion-card-header-image" alt="">
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-button expand="block" color="primary" fill="outline" (click)="swapFaces()" shape="round">Swap</ion-button>
+      </ion-col>
+      <ion-segment value="referenceSegment" (ionChange)="referenceSegmentTabChanged($event)">
+        <ion-segment-button value="referenceSegment">
+          Reference
+        </ion-segment-button>
+        <ion-segment-button value="targetSegment">
+          Target
+        </ion-segment-button>
+      </ion-segment>
+      <ion-col *ngIf="referenceSegmentTab">
+        <ion-row class="ion-justify-content-center ion-align-items-center">
+          <ion-col size-lg="7" size="12" style="text-align: center;">
+            <img style="max-height: 350px;" [src]="referenceImageURL" class="ion-card-header-image" alt="">
+          </ion-col>
+        </ion-row>
+        <div>
+          <div *ngIf="referenceSegmentSelected === 'upload'">
+            <ion-button expand="block" color="primary" fill="outline" (click)="uploadFile('reference')"
+              shape="round">Upload</ion-button>
+          </div>
+          <div *ngIf="referenceSegmentSelected === 'gallery'">Teste Gallery</div>
+          <div *ngIf="referenceSegmentSelected === 'camera'">Teste Camera</div>
+          <div *ngIf="referenceSegmentSelected === 'url'">
+            <form [formGroup]="urlReferenceForm">
+              <ion-input placeholder="URL" shape="round" fill="outline" label-placement="floating" label="URL"
+                placeholder="https://imagem.com" formControlName="url"></ion-input>
+            </form>
+            <ion-button expand="block" color="primary" fill="outline" (click)="loadUrlImage('reference')"
+              [disabled]="urlReferenceForm.invalid" shape="round">Load</ion-button>
+          </div>
+        </div>
+        <ion-segment value="url" #referenceSegment (ionChange)="referenceSegmentChanged($event)">
+          <ion-segment-button value="gallery">
+            <ion-icon name="images-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="upload" >
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="camera">
+            <ion-icon name="camera-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="url">
+            <ion-icon name="globe-outline"></ion-icon>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-col>
+      <ion-col *ngIf="targetSegmentTab">
+        <ion-row class="ion-justify-content-center ion-align-items-center">
+          <ion-col size-lg="7" size="12" style="text-align: center;">
+            <img style="max-height: 350px;" [src]="targetImageURL" class="ion-card-header-image" alt="">
+          </ion-col>
+        </ion-row>
+        <div>
+          <div *ngIf="targetSegmentSelected === 'upload'">
+            <ion-button expand="block" color="primary" fill="outline" (click)="uploadFile('target')"
+              shape="round">Upload</ion-button>
+          </div>
+          <div *ngIf="targetSegmentSelected === 'gallery'">Teste Gallery</div>
+          <div *ngIf="targetSegmentSelected === 'camera'">Teste Camera</div>
+          <div *ngIf="targetSegmentSelected === 'url'">
+            <form [formGroup]="urlTargetForm">
+              <ion-input placeholder="URL" shape="round" fill="outline" label-placement="floating" label="URL"
+                placeholder="https://imagem.com" formControlName="url"></ion-input>
+            </form>
+            <ion-button expand="block" color="primary" fill="outline" (click)="loadUrlImage('target')"
+              [disabled]="urlTargetForm.invalid" shape="round">Load</ion-button>
+          </div>
+        </div>
+        <ion-segment value="url" #referenceSegment (ionChange)="targetSegmentChanged($event)">
+          <ion-segment-button value="gallery">
+            <ion-icon name="images-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="upload">
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="camera">
+            <ion-icon name="camera-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="url">
+            <ion-icon name="globe-outline"></ion-icon>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

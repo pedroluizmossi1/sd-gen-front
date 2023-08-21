@@ -191,7 +191,6 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
             var images_id = res.body.images;
             for (var i = 0; i < images_id.length; i++) {
               this.Sd.getUserImage(token, images_id[i]).subscribe((response: HttpResponse<Blob>) => {
-                // Obtenha o corpo da resposta que é a imagem Blob
                 baseImage = response.body;
                 if (baseImage) {
                   let objectURL = URL.createObjectURL(baseImage);

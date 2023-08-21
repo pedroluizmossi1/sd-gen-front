@@ -124,6 +124,19 @@ export class SdGenApiService {
     var param = new HttpParams().set('image_id', image_id);
     return this.http.delete(`${this.apiUrl}/user/image/`, { headers: headers, params: param, observe: 'response' });
   }
+
+  // Face Swap
+  postGenerateFaceSwap(token: any, data: any, folder: any): Observable<HttpResponse<any>> {
+    var params = new HttpParams().set('folder', folder);
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(`${this.apiUrl}/user/image/faceswap/`, data, { headers: headers, params: params, observe: 'response' });
+  }
+
+  postFaceSwapUpload(token: any, data: any, folder: any): Observable<HttpResponse<any>> {
+    var params = new HttpParams().set('folder', folder);
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(`${this.apiUrl}/user/image/faceswap/upload/`, data, { headers: headers, params: params, observe: 'response' });
+  }
   
   // Plan
   getUserPlan(token: any, plan: any): Observable<HttpResponse<any>> {
