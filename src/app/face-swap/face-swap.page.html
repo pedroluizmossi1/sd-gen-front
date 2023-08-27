@@ -1,5 +1,4 @@
 <app-toggle [title]="'FaceSwap'"></app-toggle>
-
 <ion-content [fullscreen]="true">
   <ion-progress-bar type="indeterminate" *ngIf="imageLoader" class="progressLoader"></ion-progress-bar>
   <ion-segment [(ngModel)]="selectedSegment" (ionChange)="referenceSegmentTabChanged($event)">
@@ -50,6 +49,8 @@
 </ion-content>
 
 <ion-footer class="glassFooter" *ngIf="targetSegmentTabSelected">
+  <ion-row class="ion-justify-content-center ion-align-items-center">
+    <ion-col size-lg="7" size="12" style="text-align: center;">
   <div class="ion-padding noPaddingTop">
     <div *ngIf="targetSegmentSelected === 'url'">
       <form [formGroup]="urlTargetForm">
@@ -58,18 +59,26 @@
       </form>
       <ion-button expand="block" color="warning" fill="outline" (click)="loadUrlImage('target')"
         [disabled]="urlTargetForm.invalid" shape="round">Load</ion-button>
-      <br />
     </div>
     <div *ngIf="targetSegmentSelected === 'camera'">
       <ion-button *ngIf="!webMobilePlataform" expand="block" color="warning" fill="outline" (click)="takePicture('target',false)"
         shape="round">Take Picture / Gallery</ion-button>
       <ion-button *ngIf="webMobilePlataform" expand="block" color="warning" fill="outline" (click)="mobileWebActionSheet('target')"
         shape="round">Take Picture / Gallery</ion-button>
-      <br />
+    </div>
+    <ion-button fill="clear" expand="block" shape="round" (click)="changeAdvancedToggle()">
+      <ion-icon name="chevron-up-outline" *ngIf="!advancedToggle"></ion-icon>
+      <ion-icon name="chevron-down-outline" *ngIf="advancedToggle"></ion-icon>
+    </ion-button>
+    <div [hidden]="advancedToggle">
+    <app-get-folder-select (folder)="changeFolderCallback($event)"></app-get-folder-select>
+    <br />
     </div>
     <ion-button expand="block" color="primary" fill="outline" (click)="swapFaces()" shape="round"
       [disabled]="swapButtonDisabled">Swap Face</ion-button>
   </div>
+  </ion-col>
+  </ion-row>
   <ion-segment value="{{targetSegmentSelected}}" #referenceSegment (ionChange)="targetSegmentChanged($event)">
     <ion-segment-button value="gallery">
       <ion-icon name="images-outline"></ion-icon>
@@ -84,6 +93,8 @@
 </ion-footer>
 
 <ion-footer class="glassFooter" *ngIf="referenceSegmentTabSelected">
+  <ion-row class="ion-justify-content-center ion-align-items-center">
+    <ion-col size-lg="7" size="12" style="text-align: center;">
   <div class="ion-padding noPaddingTop">
     <div *ngIf="referenceSegmentSelected === 'url'">
       <form [formGroup]="urlReferenceForm">
@@ -104,6 +115,8 @@
     <ion-button expand="block" color="primary" fill="outline" (click)="swapFaces()" shape="round"
       [disabled]="swapButtonDisabled">Swap Face</ion-button>
   </div>
+  </ion-col>
+  </ion-row>
   <ion-segment value="{{referenceSegmentSelected}}" #referenceSegment (ionChange)="referenceSegmentChanged($event)">
     <ion-segment-button value="gallery">
       <ion-icon name="images-outline"></ion-icon>

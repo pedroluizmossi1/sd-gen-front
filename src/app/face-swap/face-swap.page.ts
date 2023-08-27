@@ -19,12 +19,13 @@ import { ResultComponent } from './result/result.component';
 import { GalleryModule, GalleryItem, ImageItem, Gallery } from 'ng-gallery';
 import { Observable, Subject, filter, map, takeUntil } from 'rxjs';
 import { FullscreenImageDirective } from 'src/app/image/fullscreen-image.directive';
+import { GetFolderSelectComponent } from '../user-folder/get-folder-select/get-folder-select.component';
 @Component({
   selector: 'app-face-swap',
   templateUrl: './face-swap.page.html',
   styleUrls: ['./face-swap.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ToggleComponent, ReactiveFormsModule, ResultComponent, GalleryModule, FullscreenImageDirective],
+  imports: [IonicModule, CommonModule, FormsModule, ToggleComponent, ReactiveFormsModule, ResultComponent, GalleryModule, FullscreenImageDirective, GetFolderSelectComponent],
 })
 export class FaceSwapPage implements OnInit {
 
@@ -35,6 +36,7 @@ export class FaceSwapPage implements OnInit {
   @Input() referenceImageId: string | null = null;
   @Input() targetImageId: string | null = null;
 
+  folder: string | null = null;
   referenceSegmentTab = true;
   targetSegmentTab = false;
   resultSegmentTab = false;
@@ -51,6 +53,8 @@ export class FaceSwapPage implements OnInit {
   tabsSegments = [
     'referenceSegment', 'targetSegment', 'resultSegment'
   ]
+
+  advancedToggle: boolean = true;
 
   selectedSegment = this.tabsSegments[0];
 
@@ -80,6 +84,10 @@ export class FaceSwapPage implements OnInit {
       this.resultSegmentTabSelected = true;
     }
 
+  }
+
+  changeAdvancedToggle() {
+    this.advancedToggle = !this.advancedToggle;
   }
 
   referenceSegmentChanged(event: any) {
@@ -136,6 +144,10 @@ export class FaceSwapPage implements OnInit {
 
   }
 
+  changeFolderCallback(folder: string) {
+    this.folder = folder;
+  }
+
   getTabSegmentValue = (tab: string | null, segment: string | null) => {
     if (tab === null) {
       tab = this.referenceSegmentTab ? 'referenceSegment' : 'targetSegment';
@@ -186,7 +198,13 @@ export class FaceSwapPage implements OnInit {
   swapFaces() {
     this.imageLoader = true;
     const token = localStorage.getItem('token');
-    const folder = 'root';
+    const folder = this.folder;
+
+    if (folder === null || folder === '') {
+      this.alertService.presentAlert('Error', 'Folder not selected', 'Please select a folder to save the result.', ['OK'], 'error');
+      this.imageLoader = false;
+      return;
+    }
 
     var baseImage: Blob | null;
     
@@ -454,6 +472,12 @@ export class FaceSwapPage implements OnInit {
 
 
   ngOnInit() {
+    var token = localStorage.getItem('token');
+    this.sd.getUserFolders(token).subscribe((data: any) => {
+      if (data.status === 200) {
+        this.folder = data.body[0].name;
+      }
+    });
     this.clearSegmentImage('reference');
     this.clearSegmentImage('target');
     const navigation = this.router.getCurrentNavigation();

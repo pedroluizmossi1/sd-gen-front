@@ -1,4 +1,4 @@
-import { Component, OnInit, NgModule, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, NgModule, Output, EventEmitter, Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { CommonModule } from '@angular/common';
@@ -25,6 +25,7 @@ export class GetFolderSelectComponent implements OnInit {
     var token = localStorage.getItem('token');
     var user = localStorage.getItem('user') || '{}';
     var folders = JSON.parse(user).folders;
+      
     this.Sd.getUserFolders(token).subscribe((data: any) => {
       if (data.status === 200) {
         this.folders = data.body.map((item: any) => item.name);
