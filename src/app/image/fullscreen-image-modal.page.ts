@@ -10,6 +10,7 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Platform } from '@ionic/angular';
 import { ImageFunctionsModule } from './image-functions/image-functions.module';
 import write_blob from "capacitor-blob-writer";
+import { PermissionService } from '../services/permission.service';
 
 @Component({
   selector: 'app-fullscreen-image-modal',
@@ -23,7 +24,7 @@ export class FullscreenImageModalPage {
 
 
   constructor(private sd: SdGenApiService, private alert: AlertService, private router: Router, private actionSheetController: ActionSheetController, 
-              private platform: Platform, private imageFunctions: ImageFunctionsModule) { }
+              private platform: Platform, private imageFunctions: ImageFunctionsModule, private permissionService: PermissionService) { }
     showImage: boolean = false;
     enableFaceSwap: boolean = true;
 
