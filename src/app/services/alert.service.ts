@@ -18,5 +18,6 @@ export class AlertService {
     });
 
     await alert.present();
+    return alert;
   }
 }

@@ -4,25 +4,24 @@
   </ion-content>
 
   <ion-fab slot="fixed" vertical="top" horizontal="end">
-    <ion-fab-button color="danger" (click)="closeModal()">
+    <ion-fab-button color="danger" (click)="closeModal()" title="Close">
       <ion-icon name="close-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button color="success" (click)="saveImage()">
+
+<ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="enableFaceSwap" title="Options Menu">
+  <ion-fab-button>
+    <ion-icon name="apps-outline"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-list side="start">
+    <ion-fab-button color="success" (click)="saveImage(imageId)" title="Download This image">
       <ion-icon name="cloud-download-outline"></ion-icon>
     </ion-fab-button>
-  </ion-fab>
-<div *ngIf="enableFaceSwap">
-  <ion-fab slot="fixed" vertical="bottom" horizontal="start">
-    <ion-fab-button color="warning" (click)="sendToFaceSwap('reference')">
-      <ion-icon name="add-outline"></ion-icon>
+    <ion-fab-button color="warning" (click)="presentActionSheetFaceSwap()" title="Face Swap This image">
+      <ion-icon name="happy-outline"></ion-icon>
   </ion-fab-button>
-  </ion-fab>
-  
-  <ion-fab slot="fixed" vertical="bottom" horizontal="center">
-    <ion-fab-button color="primary" (click)="sendToFaceSwap('target')">
-      <ion-icon name="swap-horizontal-outline"></ion-icon>
+  <ion-fab-button color="danger" (click)="deleteImage(imageId)" title="Delete This image">
+    <ion-icon name="trash-outline"></ion-icon>
   </ion-fab-button>
-  </ion-fab>
-</div>
+  </ion-fab-list>
+</ion-fab>
