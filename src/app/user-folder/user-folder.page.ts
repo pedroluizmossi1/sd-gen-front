@@ -43,7 +43,6 @@ export class UserFolderPage implements OnInit {
       if (data.status === 200) {
         this.folderList = data.body;
         this.extractFolderName_id();
-        console.log(this.folderList);
       } else {
         console.log(data.body);
       }

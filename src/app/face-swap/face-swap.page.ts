@@ -1,48 +1,93 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpHeaders, HttpParams, HttpResponse, } from '@angular/common/http';
+import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ActionSheetController } from '@ionic/angular';
 import { ToggleComponent } from '../menu/toggle/toggle.component';
 import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SdGenApiService } from '../services/sd-gen-api.service';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { AlertService } from '../services/alert.service';
+import { Camera, CameraResultType } from '@capacitor/camera';
+import { ImageCompressionService } from '../services/image-compression.service';
+import Compressor from 'compressorjs';
+import { decode } from "base64-arraybuffer";
+import { Platform } from '@ionic/angular';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { ResultComponent } from './result/result.component';
+import { GalleryModule, GalleryItem, ImageItem, Gallery } from 'ng-gallery';
+import { Observable, Subject, filter, map, takeUntil } from 'rxjs';
+import { FullscreenImageDirective } from 'src/app/image/fullscreen-image.directive';
 @Component({
   selector: 'app-face-swap',
   templateUrl: './face-swap.page.html',
   styleUrls: ['./face-swap.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ToggleComponent, ReactiveFormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, ToggleComponent, ReactiveFormsModule, ResultComponent, GalleryModule, FullscreenImageDirective],
 })
 export class FaceSwapPage implements OnInit {
 
-  constructor(private sd: SdGenApiService, private sanitizer: DomSanitizer, private alertService: AlertService) { }
+  constructor(private sd: SdGenApiService, private sanitizer: DomSanitizer, private alertService: AlertService, private imageCompressionService: ImageCompressionService,
+    private platform: Platform, private actionSheetController: ActionSheetController, private router: Router) { 
+    }
+
+  @Input() referenceImageId: string | null = null;
+  @Input() targetImageId: string | null = null;
 
   referenceSegmentTab = true;
   targetSegmentTab = false;
+  resultSegmentTab = false;
   referenceSegmentSelected = 'url';
   targetSegmentSelected = 'url';
   referenceImageURL: string | null = null;
   targetImageURL: string | null = null;
-  faceSwapimages: any[] = [];
+  resultImageURL: SafeUrl | null = null;
+  resultImageId: string | null = null;
+  swapButtonDisabled = true;
+  imageLoader = false;
+  plataformType = this.platform.platforms();
+  webMobilePlataform = false;
+  tabsSegments = [
+    'referenceSegment', 'targetSegment', 'resultSegment'
+  ]
 
-  uploadReferenceImageId: string | null = null;
-  uploadTargetImageId: string | null = null;
+  selectedSegment = this.tabsSegments[0];
+
+  referenceSegmentTabSelected = true;
+  targetSegmentTabSelected = false;
+  resultSegmentTabSelected = false;
+
+  cameraReferenceImageId: string | null = null;
+  cameraTargetImageId: string | null = null;
+
+  galleryReferenceImageId: string | null = null;
+  galleryTargetImageId: string | null = null;
 
   referenceSegmentTabChanged(event: any) {
-    this.referenceSegmentTab = this.referenceSegmentTab ? false : true;
-    this.targetSegmentTab = this.targetSegmentTab ? false : true;
+    if (event.detail.value === 'referenceSegment') {
+      this.referenceSegmentTabSelected = true;
+      this.targetSegmentTabSelected = false;
+      this.resultSegmentTabSelected = false;
+    } else if (event.detail.value === 'targetSegment') {
+      this.referenceSegmentTabSelected = false;
+      this.targetSegmentTabSelected = true;
+      this.resultSegmentTabSelected = false;
+    }
+    else if (event.detail.value === 'resultSegment') {
+      this.referenceSegmentTabSelected = false;
+      this.targetSegmentTabSelected = false;
+      this.resultSegmentTabSelected = true;
+    }
+
   }
 
   referenceSegmentChanged(event: any) {
     this.referenceSegmentSelected = event.detail.value;
-    this.cleanVariables('reference');
   }
 
   targetSegmentChanged(event: any) {
     this.targetSegmentSelected = event.detail.value;
-    this.cleanVariables('target');
   }
 
   urlTargetForm = new FormGroup({
@@ -63,55 +108,97 @@ export class FaceSwapPage implements OnInit {
   }
 
   loadUrlImage(variable: string) {
+    this.clearSegmentImage(variable, 'url');
     if (variable === 'reference') {
       if (!this.validUrlString(this.urlReferenceForm.value.url || '')) {
         this.alertService.presentAlert('Error', 'Invalid URL', 'Please enter a valid URL.', ['OK'], 'error');
       }
+      this.imageLoader = true;
       this.referenceImageURL = this.urlReferenceForm.value.url || '';
+      this.targetSegmentTab = true;
+      setTimeout(() => {
+        this.selectedSegment = this.tabsSegments[1];
+        this.referenceSegmentTabChanged({ detail: { value: 'targetSegment' } });
+        this.imageLoader = false;
+      }, 1000);
     } else if (variable === 'target') {
       if (!this.validUrlString(this.urlTargetForm.value.url || '')) {
         this.alertService.presentAlert('Error', 'Invalid URL', 'Please enter a valid URL.', ['OK'], 'error');
       }
+      setTimeout(() => {
+        this.imageLoader = false;
+      }, 1000);
       this.targetImageURL = this.urlTargetForm.value.url || '';
+      this.swapButtonDisabled = false;
     } else {
       this.alertService.presentAlert('Error', 'loadUrlImage', 'Error loading image, please check the URL.', ['OK'], 'error');
     }
+
   }
 
+  getTabSegmentValue = (tab: string | null, segment: string | null) => {
+    if (tab === null) {
+      tab = this.referenceSegmentTab ? 'referenceSegment' : 'targetSegment';
+      if (tab === this.tabsSegments[0]) {
+        segment = this.referenceSegmentSelected;
+      } else if (tab === this.tabsSegments[1]) {
+        segment = this.targetSegmentSelected;
+      }
+    }
+
+    if (tab === 'referenceSegment') {
+      if (segment === 'url') {
+        return this.urlReferenceForm.value.url || '';
+      } else if (segment === 'camera') {
+        return this.cameraReferenceImageId || '';
+      } else if (segment === 'gallery') {
+        return this.galleryReferenceImageId || '';
+      } else if (segment === null) {
+        return this.cameraReferenceImageId || this.galleryReferenceImageId;
+      }
+    } else if (tab === 'targetSegment') {
+      if (segment === 'url') {
+        return this.urlTargetForm.value.url || '';
+      } else if (segment === 'camera') {
+        return this.cameraTargetImageId || '';
+      } else if (segment === 'gallery') {
+        return this.galleryTargetImageId || '';
+      } else if (segment === null) {
+        return this.cameraTargetImageId || this.galleryTargetImageId;
+      }
+    } 
+      
+    return '';
+    }
+
+    clearSegmentImage = (tab: string, ignore?: string ) => {
+      if (tab === 'reference') {
+        ignore !== 'url' ? this.urlReferenceForm.value.url : '';
+        ignore !== 'camera' ? this.cameraReferenceImageId = null : '';
+        ignore !== 'gallery' ? this.galleryReferenceImageId = null : '';
+      } else if (tab === 'target') {
+        ignore !== 'url' ? this.urlTargetForm.value.url : '';
+        ignore !== 'camera' ? this.cameraTargetImageId = null : '';
+        ignore !== 'gallery' ? this.galleryTargetImageId = null : '';
+      }
+    }
+
   swapFaces() {
+    this.imageLoader = true;
     const token = localStorage.getItem('token');
-    var activeReferenceSegment = this.referenceSegmentSelected;
-    var activeTargetSegment = this.targetSegmentSelected;
     const folder = 'root';
 
     var baseImage: Blob | null;
+    
+    
 
     const jsonData = {
-      "target_id": "",
-      "reference_id": "",
-      "target_url": "",
-      "reference_url": "",
+      "target_id": this.getTabSegmentValue('targetSegment', null),
+      "reference_id": this.getTabSegmentValue('referenceSegment', null),
+      "target_url": this.getTabSegmentValue('targetSegment', 'url'),
+      "reference_url": this.getTabSegmentValue('referenceSegment', 'url'),
       "upscale": 1
     }
-
-    if (activeReferenceSegment === 'url' && this.urlReferenceForm !== null) {
-      var referenceImage = this.urlReferenceForm.value.url;
-      jsonData.reference_url = referenceImage || '';
-    }
-
-    if (activeTargetSegment === 'url' && this.urlTargetForm.value.url !== null) {
-      var targetImage = this.urlTargetForm.value.url;
-      jsonData.target_url = targetImage || '';
-    }
-    
-    if (activeReferenceSegment === 'upload' && this.uploadReferenceImageId !== null) {
-      jsonData.reference_id = this.uploadReferenceImageId || '';
-    }
-
-    if (activeTargetSegment === 'upload' && this.uploadTargetImageId !== null) {
-      jsonData.target_id = this.uploadTargetImageId || '';
-    }
-    
 
     this.sd.postGenerateFaceSwap(token, jsonData, folder).subscribe(
       (res) => {
@@ -121,101 +208,295 @@ export class FaceSwapPage implements OnInit {
             baseImage = response.body;
             if (baseImage) {
               let objectURL = URL.createObjectURL(baseImage);
-              this.faceSwapimages.push(this.sanitizer.bypassSecurityTrustUrl(objectURL));
+              this.resultImageURL = (this.sanitizer.bypassSecurityTrustUrl(objectURL));
+              this.resultImageId = images_id[i];
+              this.resultSegmentTab = true;
+              this.imageLoader = false;
+              this.selectedSegment = this.tabsSegments[2];
+              this.referenceSegmentTabChanged({ detail: { value: 'resultSegment' } });
             }
           });
         }
       },
       (err) => {
         console.log(err);
+        this.alertService.presentAlert('Error', 'Face swap failed', err.error.detail, ['OK'], 'error');
+        this.imageLoader = false;
       }
     );
   }
 
-  uploadFile(variable: string) {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
+  takePicture = async (variable: string, pickGalleryImage: boolean = false) => {
+    this.clearSegmentImage(variable, 'camera');
     const token = localStorage.getItem('token');
     const fileLimitKB = 1024 * 1024 * 2; // 2 MB
     const imageBase64Data = {
       'image': ''
     };
-
-    fileInput.onchange = (event) => {
-      const file = (event.target as HTMLInputElement)?.files?.[0];
-      if (!file || !file.size || file.size > fileLimitKB) {
-        this.alertService.presentAlert('Error', 'File too big', 'File size must be less than 512 KB, please upload a smaller file.', ['OK'], 'error');
-        return;
-      }
-      else if (!file.type.includes('image')) {
-        this.alertService.presentAlert('Error', 'Invalid file type', 'Please upload an image file.', ['OK'], 'error');
-        return;
-      }
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const imageBase64 = e?.target?.result?.toString() || '';
-        imageBase64Data.image = imageBase64;
-        this.sd.postFaceSwapUpload(token, imageBase64Data, 'root').subscribe({
-          next: (data: any) => {
-            if (data.status === 200) {
-              this.sd.getUserImage(token, data.body.image).subscribe((response: HttpResponse<Blob>) => {
-                var baseImage = response.body;
-                if (baseImage) {
-                  let objectURL = URL.createObjectURL(baseImage);
-                  if (variable === 'reference') {
-                    this.referenceImageURL = objectURL;
-                    this.uploadReferenceImageId = data.body.image;
-                  }
-                  else if (variable === 'target') {
-                    this.targetImageURL = objectURL;
-                    this.uploadTargetImageId = data.body.image;
-                  }
-                  else {
-                    console.log('Error: uploadFile');
-                  }
-                }
-              }
-              );
-            }
-          },
-          error: (error) => {
-            console.log(error);
-            this.alertService.presentAlert('Error', 'Image upload failed', 'Image upload failed, please try again.', ['OK'], 'error');
-          },
-          complete: () => {
-            this.alertService.presentAlert('Success', 'Image uploaded', 'Image uploaded successfully.', ['OK'], 'success');
-          }
-        });
-      };
-      reader.readAsDataURL(file);
-    };
-    fileInput.click();
-  }
-
-
-  cleanVariables(variable?: string) {
-    if (variable === 'reference') {
-      this.referenceImageURL = null;
-      this.uploadReferenceImageId = null;
-      this.urlReferenceForm.get('url')?.reset();
-    }
-    else if (variable === 'target') {
-      this.targetImageURL = null;
-      this.uploadTargetImageId = null;
-      this.urlTargetForm.get('url')?.reset();
+    var image: any | null = null;
+    if (pickGalleryImage) {
+      image = await this.getPicture();
     } else {
-      this.referenceImageURL = null;
-      this.targetImageURL = null;
-      this.uploadReferenceImageId = null;
-      this.uploadTargetImageId = null;
-      this.urlReferenceForm.get('url')?.reset();
-      this.urlTargetForm.get('url')?.reset();
+      image = await Camera.getPhoto({
+        quality: 95,
+        allowEditing: false,
+        resultType: CameraResultType.Base64
+      });
+      image = image.base64String
+    }
+    this.imageLoader = true;
+    const blob = new Blob([new Uint8Array(decode(image))], {
+      type: 'image/webp'
+    });
+    const file = new File([blob] as any, 'image.webp', {
+      type: 'image/webp'
+    });
+    const compressedFile = await this.imageCompressionService.compressImageBase64(file, 95, 2048, 2048);
+    imageBase64Data.image = compressedFile.toString();
+    this.sd.postFaceSwapUpload(token, imageBase64Data, 'root').subscribe({
+      next: (data: any) => {
+        if (data.status === 200) {
+          this.sd.getUserImage(token, data.body.image).subscribe((response: HttpResponse<Blob>) => {
+            var baseImage = response.body;
+            if (baseImage) {
+              let objectURL = URL.createObjectURL(baseImage);
+              if (variable === 'reference') {
+                this.referenceImageURL = objectURL;
+                this.cameraReferenceImageId = data.body.image;
+                this.targetSegmentTab = true;
+                this.changeTab('target');
+                this.imageLoader = false;
+              }
+              else if (variable === 'target') {
+                this.targetImageURL = objectURL;
+                this.cameraTargetImageId = data.body.image;
+                this.swapButtonDisabled = false;
+                this.imageLoader = false;
+              }
+              else {
+                this.imageLoader = false;
+                this.alertService.presentAlert('Error', 'takePicture', 'Error loading image, please try again.', ['OK'], 'error');
+              }
+            }
+          }
+          );
+        }
+      },
+      error: (error) => {
+        console.log(error);
+        this.alertService.presentAlert('Error', 'Image upload failed', 'Image upload failed, please try again.', ['OK'], 'error');
+      },
+      complete: () => {
+        this.imageLoader = false;
+      }
+    });
+  };
+
+  async base64FromPath(path: string): Promise<string> {
+    const response = await fetch(path);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          const base64 = reader.result.replace('data:image/jpeg;base64,', '');
+          resolve(base64);
+        } else {
+          reject('method did not return a string');
+        }
+      };
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  getPicture = async () => {
+    this.clearSegmentImage('reference', 'camera');
+    const token = localStorage.getItem('token');
+    const fileLimitKB = 1024 * 1024 * 2; // 2 MB
+    const imageBase64Data = {
+      'image': ''
+    };
+    const image = await Camera.pickImages({
+      quality: 95,
+      limit: 1,
+    });
+    this.imageLoader = true;
+    const image2 = await this.base64FromPath(image.photos[0].webPath || '');
+    return image2;
+  }
+
+  getImageFromId = (imageId: string): Observable<SafeUrl | null> => {
+    const token = localStorage.getItem('token');
+    return this.sd.getUserImage(token, imageId).pipe(
+      map((response: HttpResponse<Blob>) => {
+        var baseImage = response.body;
+        if (baseImage) {
+          let objectURL = URL.createObjectURL(baseImage);
+          return this.sanitizer.bypassSecurityTrustUrl(objectURL);
+        }
+        return null;
+      })
+    );
+  }
+
+
+
+  mobileWebActionSheet = async (variable: string) => {
+    var actionSheetButtons = [
+      {
+        text: 'Delete',
+        role: 'destructive',
+        data: {
+          action: 'delete',
+        },
+      },
+      {
+        text: 'Share',
+        data: {
+          action: 'share',
+        },
+      },
+      {
+        text: 'Cancel',
+        role: 'cancel',
+        data: {
+          action: 'cancel',
+        },
+      },
+    ];
+    if (variable === 'reference') {
+      actionSheetButtons = [
+        {
+          text: 'Take Picture',
+          data: {
+            action: 'takePicture',
+          },
+        },
+        {
+          text: 'Pick from Gallery',
+          data: {
+            action: 'pickGalleryImage',
+          },
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          data: {
+            action: 'cancel',
+          },
+        },
+      ];
+    } else if (variable === 'target') {
+      actionSheetButtons = [
+        {
+          text: 'Take Picture',
+          data: {
+            action: 'takePicture',
+          },
+        },
+        {
+          text: 'Pick from Gallery',
+          data: {
+            action: 'pickGalleryImage',
+          },
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          data: {
+            action: 'cancel',
+          },
+        },
+      ];
+    }
+
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Select Image',
+      buttons: actionSheetButtons,
+    });
+
+    await actionSheet.present();
+
+    const { data } = await actionSheet.onDidDismiss();
+
+    if (data && data.action === 'takePicture') {
+      this.takePicture(variable);
+    } else if (data && data.action === 'pickGalleryImage') {
+      this.takePicture(variable, true);
+
+    }
+  };
+
+  changeTab = (tab: string) => {
+    const time = 1000;
+    if (tab === 'reference') {
+      setTimeout(() => {
+        this.selectedSegment = this.tabsSegments[0];
+        this.referenceSegmentTabChanged({ detail: { value: 'referenceSegment' } });
+      }, time);
+    } else if (tab === 'target') {
+      this.targetSegmentTab = true;
+      this.swapButtonDisabled = false;
+      setTimeout(() => {
+        this.selectedSegment = this.tabsSegments[1];
+        this.referenceSegmentTabChanged({ detail: { value: 'targetSegment' } });
+      }, time);
+    } else if (tab === 'result') {
+      this.resultSegmentTab = true;
+      setTimeout(() => {
+        this.selectedSegment = this.tabsSegments[2];
+        this.referenceSegmentTabChanged({ detail: { value: 'resultSegment' } });
+      }, time);
     }
   }
+      
+
 
   ngOnInit() {
+    this.clearSegmentImage('reference');
+    this.clearSegmentImage('target');
+    const navigation = this.router.getCurrentNavigation();
+    const queryParams = navigation?.extras.queryParams as {
+      referenceImageId: string | null;
+      targetImageId: string | null;
+    };
+    if (queryParams) {
+    if (queryParams.referenceImageId !== '' && queryParams.referenceImageId !== null) {
+      this.referenceSegmentSelected = 'gallery';
+      this.getImageFromId(queryParams.referenceImageId).subscribe((response: SafeUrl | null) => {
+        this.referenceImageURL = response as string;
+      });
+      this.galleryReferenceImageId = queryParams.referenceImageId;
+      this.changeTab('target');
+    } 
+    if (queryParams.targetImageId !== '' && queryParams.targetImageId !== null) {
+      this.targetSegmentSelected = 'gallery';
+      this.getImageFromId(queryParams.targetImageId).subscribe((response: SafeUrl | null) => {
+        this.targetImageURL = response as string;
+      });
+      this.galleryTargetImageId = queryParams.targetImageId;
+      this.changeTab('target');
+    }
+  }
+
+    if (this.plataformType.includes('mobileweb')) {
+      this.webMobilePlataform = true;
+    }
+
+
+    if (this.platform.is('capacitor')) {
+    Camera.checkPermissions().then((result) => {
+      if (result.camera === 'denied') {
+        Camera.requestPermissions().then((result) => {
+          if (result.camera === 'denied') {
+            this.alertService.presentAlert('Error', 'Camera access denied', 'Please allow camera access to use this feature.', ['OK'], 'error');
+          }
+        });
+      }
+    }
+    );
+  }
   }
 
 }

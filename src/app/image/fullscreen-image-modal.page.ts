@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import PinchZoom from 'pinch-zoom-js';
 import { SdGenApiService } from '../services/sd-gen-api.service';
 import { AlertService } from '../services/alert.service';
+import { NavigationExtras, Router } from '@angular/router';
 
 @Component({
   selector: 'app-fullscreen-image-modal',
@@ -13,9 +14,12 @@ import { AlertService } from '../services/alert.service';
 })
 export class FullscreenImageModalPage {
     @Input() imageUrl!: string;
+    @Input() imageId!: string;
 
-  constructor(private sd: SdGenApiService, private alert: AlertService) { }
+
+  constructor(private sd: SdGenApiService, private alert: AlertService, private router: Router) { }
     showImage: boolean = false;
+    enableFaceSwap: boolean = true;
 
     closeModal() {
       (document.querySelector('ion-modal') as HTMLIonModalElement).dismiss();
@@ -31,13 +35,28 @@ export class FullscreenImageModalPage {
       link.click();
       document.body.removeChild(link);
     }
+
+    sendToFaceSwap(RefOrTar: string) {
+      const navigationExtras: NavigationExtras = {
+        queryParams: {
+          referenceImageId: RefOrTar === 'reference' ? this.imageId : '',
+          targetImageId: RefOrTar === 'target' ? this.imageId : ''
+        }
+      };
+      this.router.navigate(['/face-swap'], navigationExtras);
+      this.closeModal();
+    }    
+
     ngOnInit() {
       setTimeout(() => {
         this.showImage = true;
       }, 25);
       setTimeout(() => {
-        new PinchZoom(document.querySelector('#generatedImage') as HTMLElement);
+        new PinchZoom(document.querySelector('img[alt="pinch-zoom"]' as any));
       }, 25);
+      if (this.imageId === '') {
+        this.enableFaceSwap = false;
+      }
     }
 
 }

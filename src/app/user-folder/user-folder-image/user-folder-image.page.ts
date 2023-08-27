@@ -18,7 +18,7 @@ import { FullscreenImageDirective } from 'src/app/image/fullscreen-image.directi
   imports: [IonicModule, CommonModule, FormsModule, ToggleComponent, FullscreenImageDirective],
 })
 export class UserFolderImagePage implements OnInit {
-  @Input() images: any[] = [];
+  @Input() images: { url: SafeUrl, id: string }[] = [];
 
   constructor(private Sd: SdGenApiService, private route: ActivatedRoute, private sanitizer: DomSanitizer) { }
   images_id: any[] = [];
@@ -37,7 +37,7 @@ export class UserFolderImagePage implements OnInit {
 
   getImages(index:any, size:any) {
     var token = localStorage.getItem('token');
-    var images_id = [];
+    var images_id: string[] = [];
     this.route.queryParams.subscribe(params => {
       images_id = params['images'];
       for (let i = index; i < size; i++) {
@@ -46,7 +46,7 @@ export class UserFolderImagePage implements OnInit {
           var baseImage = response.body;
           if (baseImage) {
             let objectURL = URL.createObjectURL(baseImage);
-            this.images.push(this.sanitizer.bypassSecurityTrustUrl(objectURL));
+            this.images.push({ url: this.sanitizer.bypassSecurityTrustUrl(objectURL), id: images_id[i] });
           }
         });
       }

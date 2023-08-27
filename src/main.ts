@@ -11,6 +11,7 @@ import { environment } from './environments/environment';
 import { register } from 'swiper/element/bundle';
 import { GALLERY_CONFIG, GalleryConfig } from 'ng-gallery';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
+
 // register Swiper custom elements
 register();
 

@@ -33,7 +33,6 @@ export class AppComponent {
     profile_picture: ''
   };
   
-
   constructor(private router: Router, private sdGenApiService: SdGenApiService) {}
 
   logout() {

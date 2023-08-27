@@ -27,14 +27,14 @@
         </ion-card-header>
     <ion-grid class="imageMaxScreen">
         <swiper-container pagination="true" thumbs-swiper=".mySwiper2" space-between="5">
-        <swiper-slide *ngFor="let imageUrl of images">
-          <img appFullscreenImage [src]="imageUrl" *ngIf="imageUrl" class="ion-card-header-image " alt="">
+        <swiper-slide *ngFor="let image of images">
+          <img appFullscreenImage [src]="image.url" [id]="image.id" *ngIf="image.url" class="ion-card-header-image " alt="">
         </swiper-slide>
       </swiper-container>
       <swiper-container space-between="5" slides-per-view="4" free-mode="true"
                         watch-slides-progress="true" class="mySwiper2">
-        <swiper-slide *ngFor="let imageUrl of images">
-          <img [src]="imageUrl" *ngIf="imageUrl" class="ion-card-header-image" alt="">
+        <swiper-slide *ngFor="let image of images">
+          <img [src]="image.url" [id]="image.id" *ngIf="image.url" class="ion-card-header-image" alt="">
         </swiper-slide>
       </swiper-container>
     </ion-grid>
