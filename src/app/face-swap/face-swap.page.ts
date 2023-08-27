@@ -240,6 +240,9 @@ export class FaceSwapPage implements OnInit {
         console.log(err);
         this.alertService.presentAlert('Error', 'Face swap failed', err.error.detail, ['OK'], 'error');
         this.imageLoader = false;
+      },
+      () => {
+        this.imageLoader = false;
       }
     );
   }

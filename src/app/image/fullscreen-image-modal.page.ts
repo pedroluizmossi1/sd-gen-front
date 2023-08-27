@@ -71,12 +71,13 @@ export class FullscreenImageModalPage {
             role: 'delete',
             icon: 'trash',
             handler: () => {
-              this.sd.deleteUserImage(token, imageId).subscribe((data: any) => {
-                if (data.status === 200) {
+              this.sd.deleteUserImage(token, imageId).subscribe({
+                next: (res: any) => {
                   this.closeModal();
                   window.location.reload();
-                } else {
-                  this.alert.presentAlert('Error', 'Image could not be deleted', '', ['OK'], 'danger');
+                },
+                error: (err: any) => {
+                  this.alert.presentAlert('Error', 'Could not delete image', err.message, ['OK'], 'error');
                 }
               }
               );
