@@ -15,6 +15,7 @@
     <ion-item color="danger" *ngIf="deleteMode">
       <ion-toggle (click)="markFolderToDelete(item._id)" color="warning">Delete Folder?</ion-toggle>
     </ion-item>
+    <div id="app"></div>
     <gallery gesture="true" id="{{item.name}}" [items]="images" thumbPosition="bottom"></gallery>
   </ion-list>
   <br *ngIf="desktop" />

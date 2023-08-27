@@ -39,7 +39,6 @@ export class FullscreenImageModalPage {
       link.download = imageId !== undefined ? imageId : String(Math.random() * 100000000000000000 + 1);
       link.download = link.download + '.png';
       document.body.appendChild(link);
-      alert(this.platform.platforms());
       if (this.platform.is('capacitor') || this.platform.is('android') || this.platform.is('ios')) {
         if (this.platform.is('mobileweb')) {
           link.click();
