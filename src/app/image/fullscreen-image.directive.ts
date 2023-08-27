@@ -19,7 +19,8 @@ export class FullscreenImageDirective {
         component: FullscreenImageModalPage,
          
         componentProps: {
-          imageUrl: this.el.nativeElement.src
+          imageUrl: this.el.nativeElement.src,
+          imageId: this.el.nativeElement.id
         }
       });
       await modal.present();

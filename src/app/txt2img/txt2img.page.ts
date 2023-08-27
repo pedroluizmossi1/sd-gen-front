@@ -33,7 +33,7 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
   refinerRangelastEmittedValue: RangeValue = {lower: 0, upper: 1}
   generateButton: boolean = false;
 
-  images: any[] = [];
+  images: { url: SafeUrl, id: string }[] = [];
   imageLoader: boolean = false;
   imagePlaceholder: boolean = true;
   folder = '';
@@ -163,13 +163,15 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
           (res) => {
             this.images = [];
             var images_id = res.body.images;
-            for (var i = 0; i < images_id.length; i++) {
+            for (let i = 0; i < images_id.length; i++) {
               this.Sd.getUserImage(token, images_id[i]).subscribe((response: HttpResponse<Blob>) => {
                 // Obtenha o corpo da resposta que é a imagem Blob
                 baseImage = response.body;
+                console.log(images_id[i]);
+                //this console log is returning undefined, but when used before the for loop it returns the correct value
                 if (baseImage) {
                   let objectURL = URL.createObjectURL(baseImage);
-                  this.images.push(this.sanitizer.bypassSecurityTrustUrl(objectURL));
+                  this.images.push({ url: this.sanitizer.bypassSecurityTrustUrl(objectURL), id: images_id[i] });
                 }
               });
             }
@@ -189,13 +191,12 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
           (res) => {
             this.images = [];
             var images_id = res.body.images;
-            for (var i = 0; i < images_id.length; i++) {
+            for (let i = 0; i < images_id.length; i++) {
               this.Sd.getUserImage(token, images_id[i]).subscribe((response: HttpResponse<Blob>) => {
-                // Obtenha o corpo da resposta que é a imagem Blob
                 baseImage = response.body;
                 if (baseImage) {
                   let objectURL = URL.createObjectURL(baseImage);
-                  this.images.push(this.sanitizer.bypassSecurityTrustUrl(objectURL));
+                  this.images.push({ url: this.sanitizer.bypassSecurityTrustUrl(objectURL), id: images_id[i] });
                 }
               });
             }

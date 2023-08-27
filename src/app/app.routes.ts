@@ -38,6 +38,6 @@ export const routes: Routes = [
   },
   {
     path: 'face-swap',
-    loadComponent: () => import('./face-swap/face-swap.page').then( m => m.FaceSwapPage)
+    loadComponent: () => import('./face-swap/face-swap.page').then( m => m.FaceSwapPage), canActivate: [AuthGuard]
   }
 ]

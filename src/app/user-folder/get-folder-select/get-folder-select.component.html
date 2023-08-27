@@ -4,7 +4,7 @@
   interface="action-sheet"
   placeholder="Select One"
   formControlName="folder"
-  value="{{folders[0]}}"
+  [value]="folders[0]"
   (ionChange)="handleChange($event)"> <!-- Movido o formControlName aqui -->
   <div *ngFor="let item of folders" >
     <ion-select-option [value]="item" label="item">{{ item }}</ion-select-option>

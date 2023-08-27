@@ -1,6 +1,6 @@
  
   <ion-content>
-    <img [src]="imageUrl" id="generatedImage" *ngIf="showImage"/>
+    <img [src]="imageUrl" [id]="imageId" *ngIf="showImage" alt="pinch-zoom"/>
   </ion-content>
 
   <ion-fab slot="fixed" vertical="top" horizontal="end">
@@ -13,3 +13,16 @@
       <ion-icon name="cloud-download-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+<div *ngIf="enableFaceSwap">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="start">
+    <ion-fab-button color="warning" (click)="sendToFaceSwap('reference')">
+      <ion-icon name="add-outline"></ion-icon>
+  </ion-fab-button>
+  </ion-fab>
+  
+  <ion-fab slot="fixed" vertical="bottom" horizontal="center">
+    <ion-fab-button color="primary" (click)="sendToFaceSwap('target')">
+      <ion-icon name="swap-horizontal-outline"></ion-icon>
+  </ion-fab-button>
+  </ion-fab>
+</div>
