@@ -9,7 +9,7 @@
     </ion-fab-button>
   </ion-fab>
 
-<ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="enableFaceSwap" title="Options Menu">
+<ion-fab slot="fixed" vertical="bottom" horizontal="end" title="Options Menu">
   <ion-fab-button>
     <ion-icon name="apps-outline"></ion-icon>
   </ion-fab-button>
@@ -17,7 +17,7 @@
     <ion-fab-button color="success" (click)="saveImage(imageId)" title="Download This image">
       <ion-icon name="cloud-download-outline"></ion-icon>
     </ion-fab-button>
-    <ion-fab-button color="warning" (click)="presentActionSheetFaceSwap()" title="Face Swap This image">
+    <ion-fab-button color="warning" (click)="presentActionSheetFaceSwap()" *ngIf="enableFaceSwap" title="Face Swap This image">
       <ion-icon name="happy-outline"></ion-icon>
   </ion-fab-button>
   <ion-fab-button color="danger" (click)="deleteImage(imageId)" title="Delete This image">

@@ -11,7 +11,7 @@ import { environment } from './environments/environment';
 import { register } from 'swiper/element/bundle';
 import { GALLERY_CONFIG, GalleryConfig } from 'ng-gallery';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
-
+import { LIGHTBOX_CONFIG, LightboxConfig } from 'ng-gallery/lightbox';
 // register Swiper custom elements
 register();
 
@@ -22,6 +22,13 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy, },
+    {
+      provide: LIGHTBOX_CONFIG,
+      useValue: {
+        keyboardShortcuts: false,
+        exitAnimationTime: 1000
+      } as LightboxConfig
+    },
     importProvidersFrom(IonicModule.forRoot({}), [
       HttpClientModule,
       FormsModule,

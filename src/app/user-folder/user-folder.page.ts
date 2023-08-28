@@ -139,7 +139,6 @@ export class UserFolderPage implements OnInit {
   markFoldersToDelete() {
     this.deleteMode = !this.deleteMode;
     for (let i = 0; i < this.folderList.length; i++) {
-      console.log(this.folderList[i].selected);
     }
   }
 
@@ -147,7 +146,6 @@ export class UserFolderPage implements OnInit {
     for (let i = 0; i < this.folderList.length; i++) {
       if (this.folderList[i]._id === folder_id) {
         this.folderList[i].selected = !this.folderList[i].selected;
-        console.log(this.folderList[i].selected);
       }
     }
   }
@@ -200,19 +198,14 @@ export class UserFolderPage implements OnInit {
   ngOnInit() {
     if (window.screen.width >= 1024) { // 768px portrait
       this.desktop = true;
-      console.log('desktop');
     }
     this.folders();
-    setTimeout(() => {
-      console.log(this.folderList);
-    }, 100);
     for (let i = 0; i < this.folderList.length; i++) {
     const galleryRef = this.gallery.ref(this.folderList[i].name);
     galleryRef.indexChanged.subscribe(async (index) => {
       const currentImageIndex = index.currIndex as number;
       const galleryImages = index.items as number[];
       const totalImages = galleryImages.length;
-      console.log(totalImages);
       if ( currentImageIndex === totalImages - 1) {
         await this.loadImageBatch(localStorage.getItem('token') as string, this.nextBacthImages as string[], 'root');
       }

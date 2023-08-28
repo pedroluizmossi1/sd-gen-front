@@ -120,7 +120,6 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
     this.generateImageForm.patchValue({cfg_scale: modelInfo.cfg_scale});
     this.sampler = modelInfo.sampler_name;
     this.refinerLatentDefaultValue();
-    console.log(modelInfo);
 
   }
   
@@ -167,7 +166,6 @@ export class Txt2imgPage implements OnInit, AfterViewInit, OnChanges {
               this.Sd.getUserImage(token, images_id[i]).subscribe((response: HttpResponse<Blob>) => {
                 // Obtenha o corpo da resposta que é a imagem Blob
                 baseImage = response.body;
-                console.log(images_id[i]);
                 //this console log is returning undefined, but when used before the for loop it returns the correct value
                 if (baseImage) {
                   let objectURL = URL.createObjectURL(baseImage);

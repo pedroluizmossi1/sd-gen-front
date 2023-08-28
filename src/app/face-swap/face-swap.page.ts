@@ -220,14 +220,14 @@ export class FaceSwapPage implements OnInit {
 
     this.sd.postGenerateFaceSwap(token, jsonData, folder).subscribe(
       (res) => {
-        var images_id = res.body.images;
-        for (var i = 0; i < images_id.length; i++) {
+        let images_id = res.body.images;
+        for (let i = 0; i < images_id.length; i++) {
           this.sd.getUserImage(token, images_id[i]).subscribe((response: HttpResponse<Blob>) => {
             baseImage = response.body;
             if (baseImage) {
               let objectURL = URL.createObjectURL(baseImage);
               this.resultImageURL = (this.sanitizer.bypassSecurityTrustUrl(objectURL));
-              this.resultImageId = images_id[i];
+              this.resultImageId = images_id[i]
               this.resultSegmentTab = true;
               this.imageLoader = false;
               this.selectedSegment = this.tabsSegments[2];
@@ -239,6 +239,9 @@ export class FaceSwapPage implements OnInit {
       (err) => {
         console.log(err);
         this.alertService.presentAlert('Error', 'Face swap failed', err.error.detail, ['OK'], 'error');
+        this.imageLoader = false;
+      },
+      () => {
         this.imageLoader = false;
       }
     );
