@@ -284,7 +284,7 @@ export class FaceSwapPage implements OnInit {
     });
     const compressedFile = await this.imageCompressionService.compressImageBase64(file, 95, 2048, 2048);
     imageBase64Data.image = compressedFile.toString();
-    this.sd.postFaceSwapUpload(token, imageBase64Data, 'root').subscribe({
+    this.sd.postFaceSwapUpload(token, imageBase64Data, this.folder).subscribe({
       next: (data: any) => {
         if (data.status === 200) {
           this.sd.getUserImage(token, data.body.image).subscribe((response: HttpResponse<Blob>) => {
