@@ -71,7 +71,23 @@
       <ion-icon name="chevron-down-outline" *ngIf="advancedToggle"></ion-icon>
     </ion-button>
     <div [hidden]="advancedToggle">
-    <app-get-folder-select (folder)="changeFolderCallback($event)"></app-get-folder-select>
+      <ion-row>
+        <ion-col>
+          <ion-toggle color="primary" checked="true" (ionChange)="toggleFaceUpscale()">Upscale Face</ion-toggle>
+        </ion-col>
+        <ion-col>
+        </ion-col>
+      </ion-row>
+      <br />
+      <ion-row>
+        <ion-col>
+        <ion-input placeholder="Face Index" shape="round" fill="outline" label-placement="floating" label="Face Index" max="10" min="0"
+          placeholder="0" type="number" [value]="faceIndex" (change)="changeFaceIndex($event)"></ion-input>
+        </ion-col>
+        <ion-col>
+        <app-get-folder-select (folder)="changeFolderCallback($event)"></app-get-folder-select>
+        </ion-col>
+      </ion-row>
     <br />
     </div>
     <ion-button expand="block" color="primary" fill="outline" (click)="swapFaces()" shape="round"

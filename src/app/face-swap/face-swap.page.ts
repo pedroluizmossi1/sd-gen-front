@@ -55,7 +55,8 @@ export class FaceSwapPage implements OnInit {
   ]
 
   advancedToggle: boolean = true;
-
+  faceUpscale: boolean = true;
+  faceIndex: number = 0;
   selectedSegment = this.tabsSegments[0];
 
   referenceSegmentTabSelected = true;
@@ -148,6 +149,14 @@ export class FaceSwapPage implements OnInit {
     this.folder = folder;
   }
 
+  changeFaceIndex(event: any) {
+    this.faceIndex = event.target.value;
+  }
+
+  toggleFaceUpscale() {
+    this.faceUpscale = !this.faceUpscale;
+  }
+
   getTabSegmentValue = (tab: string | null, segment: string | null) => {
     if (tab === null) {
       tab = this.referenceSegmentTab ? 'referenceSegment' : 'targetSegment';
@@ -215,7 +224,8 @@ export class FaceSwapPage implements OnInit {
       "reference_id": this.getTabSegmentValue('referenceSegment', null),
       "target_url": this.getTabSegmentValue('targetSegment', 'url'),
       "reference_url": this.getTabSegmentValue('referenceSegment', 'url'),
-      "upscale": 1
+      "upscale": this.faceUpscale,
+      "face_index": this.faceIndex
     }
 
     this.sd.postGenerateFaceSwap(token, jsonData, folder).subscribe(
