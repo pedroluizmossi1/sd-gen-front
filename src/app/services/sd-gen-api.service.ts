@@ -97,7 +97,7 @@ export class SdGenApiService {
   }
 
   postImageTxt2imgV2Sd15(token: any, data: any, folder: any, Latent: boolean): Observable<HttpResponse<any>> {
-    var params = new HttpParams().set('folder', folder).set('Latent', Latent);
+    var params = new HttpParams().set('folder', folder).set('latent', Latent);
     var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(`${this.apiUrl}/user/image/txt2img/v2/sd15/`, data, { headers: headers, params: params, observe: 'response' });
   }
