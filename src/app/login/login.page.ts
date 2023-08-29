@@ -7,6 +7,7 @@ import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { AlertService } from '../services/alert.service';
 import { ToggleComponent } from '../menu/toggle/toggle.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,8 +19,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 })
 export class LoginPage implements OnInit {
 
-  constructor(private Sd: SdGenApiService, private router: Router, private alert: AlertService) { }
-
+  constructor(private Sd: SdGenApiService, private router: Router, private alert: AlertService, private auth: AuthService) { }
   loader: boolean = false;
 
   loginForm = new FormGroup({
@@ -74,6 +74,11 @@ export class LoginPage implements OnInit {
   
 
   ngOnInit() {
+    this.auth.isAuthenticated().pipe().subscribe((isLoggedIn: boolean) => {
+      if (isLoggedIn) {
+        this.router.navigate(['/txt2img']);
+      }
+    });
   }
 
 }
