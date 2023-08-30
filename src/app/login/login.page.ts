@@ -19,7 +19,7 @@ import { AuthService } from '../auth/auth.service';
 })
 export class LoginPage implements OnInit {
 
-  constructor(private Sd: SdGenApiService, private router: Router, private alert: AlertService, private auth: AuthService) { }
+  constructor(private Sd: SdGenApiService, private router: Router, private alert: AlertService, private auth: AuthService) { } 
   loader: boolean = false;
 
   loginForm = new FormGroup({
@@ -38,7 +38,9 @@ export class LoginPage implements OnInit {
     var request = this.Sd.postAuthLogin(formData).subscribe(
       (res) => {
         if (res.status === 200) {
+          var currDate = new Date();
           localStorage.setItem('token', res.body.token);
+          localStorage.setItem('token_ttl', new Date(currDate.getTime() + res.body.ttl - 1800 * 1000).toString());
           this.Sd.getUserProfile(res.body.token).subscribe((data: any) => {
             if (data.status === 200) {
               localStorage.setItem('user', JSON.stringify(data.body));
@@ -71,7 +73,6 @@ export class LoginPage implements OnInit {
     this.router.navigate(['/login/reset-password']);
   }
 
-  
 
   ngOnInit() {
     this.auth.isAuthenticated().pipe().subscribe((isLoggedIn: boolean) => {

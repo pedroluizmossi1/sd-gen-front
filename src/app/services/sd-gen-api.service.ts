@@ -38,6 +38,11 @@ export class SdGenApiService {
     return this.http.put(`${this.apiUrl}/auth/password/reset/`, null, { params: params, observe: 'response' });
   }
 
+  postRefreshToken(data: any): Observable<HttpResponse<any>> {
+    var params = new HttpHeaders().set('Authorization', `Bearer ${data.token}`);
+    return this.http.post(`${this.apiUrl}/auth/token/refresh/`, null, { headers: params, observe: 'response' });
+  }
+
   // User
   getUserProfile(token: any): Observable<HttpResponse<any>> {
     var headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
