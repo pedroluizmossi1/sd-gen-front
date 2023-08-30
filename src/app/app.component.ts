@@ -41,6 +41,8 @@ export class AppComponent {
       if (data.status === 200) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('token_ttl');
+        localStorage.removeItem('faceSwapImages');
         this.router.navigate(['/login']);
       }
     });

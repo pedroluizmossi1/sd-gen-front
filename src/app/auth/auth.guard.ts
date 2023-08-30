@@ -21,11 +21,11 @@ export class AuthGuard implements CanActivate {
           var tokenTtl = localStorage.getItem('token_ttl') || new Date();
           var currDate = new Date();
           if (new Date(tokenTtl) < currDate) {
-            this.Sd.postRefreshToken({ token: localStorage.getItem('token') }).subscribe(
+            this.Sd.postRefreshToken(localStorage.getItem('token')).subscribe(
               (res) => {
                 if (res.status === 200) {
                   localStorage.setItem('token', res.body.token);
-                  localStorage.setItem('token_ttl', new Date(currDate.getTime() + res.body.ttl - 1800 * 1000).toString());
+                  localStorage.setItem('token_ttl', new Date(currDate.getTime() + (res.body.ttl - 2800) * 1000).toString());
                 }
               },
               (err) => {

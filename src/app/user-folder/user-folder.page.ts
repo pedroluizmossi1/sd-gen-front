@@ -22,7 +22,8 @@ import { Inject } from '@angular/core';
 })
 export class UserFolderPage implements OnInit {
 
-  constructor(private Sd: SdGenApiService, private modalCtrl: ModalController, private alertService: AlertService, private router: Router, private sanitizer: DomSanitizer, @Inject(Gallery) private gallery: Gallery ) { }
+  constructor(private Sd: SdGenApiService, private modalCtrl: ModalController, private alertService: AlertService, private router: Router, private sanitizer: DomSanitizer, 
+    @Inject(Gallery) private gallery: Gallery) { }
   images: GalleryItem[] = [];
   nextBacthImages: any[] = [];
   folderList = [
@@ -42,6 +43,9 @@ export class UserFolderPage implements OnInit {
     this.Sd.getUserFolders(token).subscribe((data: any) => {
       if (data.status === 200) {
         this.folderList = data.body;
+        for (let i = 0; i < this.folderList.length; i++) {
+          this.folderList[i].images = this.folderList[i].images.reverse();
+        }
         this.extractFolderName_id();
       } else {
         console.log(data.body);
@@ -53,13 +57,12 @@ export class UserFolderPage implements OnInit {
     var token = localStorage.getItem('token');
     this.Sd.getUserFolder(token, folder_id).subscribe((data: any) => {
       if (data.status === 200) {
-        this.router.navigate(['/user-folder-image'], { queryParams: { images: data.body.images } });
+        this.router.navigate(['/user-folder-image'], { queryParams: { images: data.body.images.reverse() } });
       } else {
         console.log(data.body);
       }
     });
   }
-
 
   async extractFolderName_id() {
     const token = localStorage.getItem('token') as string;

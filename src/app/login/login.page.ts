@@ -40,7 +40,7 @@ export class LoginPage implements OnInit {
         if (res.status === 200) {
           var currDate = new Date();
           localStorage.setItem('token', res.body.token);
-          localStorage.setItem('token_ttl', new Date(currDate.getTime() + res.body.ttl - 1800 * 1000).toString());
+          localStorage.setItem('token_ttl', new Date(currDate.getTime() + (res.body.ttl - 2800) * 1000 ).toString());
           this.Sd.getUserProfile(res.body.token).subscribe((data: any) => {
             if (data.status === 200) {
               localStorage.setItem('user', JSON.stringify(data.body));
