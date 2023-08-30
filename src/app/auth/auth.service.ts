@@ -3,6 +3,7 @@ import { SdGenApiService } from 'src/app/services/sd-gen-api.service';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,4 +19,7 @@ export class AuthService {
       })
     );
   }
+
+  
+  
 }
