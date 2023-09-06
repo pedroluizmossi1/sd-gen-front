@@ -55,7 +55,7 @@ export class UserProfilePage implements OnInit {
           console.log(error);
         },
         complete: () => {
-          console.log('complete');
+          
         }
         });
       } else {
