@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  sdGenApiUrl: 'https://sd-gen-c88346a013c7.herokuapp.com'
+  sdGenApiUrl: 'http://189.11.183.210:8000'
 };
