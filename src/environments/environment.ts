@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  sdGenApiUrl: 'http://189.11.183.210:8000',
+  sdGenApiUrl: 'https://sd-gen-c88346a013c7.herokuapp.com',
 };
 
 /*
